@@ -12,7 +12,8 @@ import ru.oshifugo.functionalclans.GUITranslate;
 import ru.oshifugo.functionalclans.Utility;
 import ru.oshifugo.functionalclans.command.ClanGUI;
 import ru.oshifugo.functionalclans.command.gui_items.ItemsBase;
-import ru.oshifugo.functionalclans.sql.Clan;
+import ru.oshifugo.functionalclans.sql.Clann;
+import ru.oshifugo.functionalclans.sql.SQLiteUtility;
 import xyz.xenondevs.invui.item.builder.ItemBuilder;
 
 import java.util.Arrays;
@@ -65,7 +66,7 @@ public class Status extends ItemsBase{
                 }
                 if (members.containsKey(player.getName())) {
                     String clanName = members.get(player.getName())[2];
-                    Clan.setStatus(clanName, renamed);
+                    SQLiteUtility.getClanByName(clanName).setStatus(renamed);
                     player.sendMessage(getTranslate().get("status.done", true));
                 }
                 break;

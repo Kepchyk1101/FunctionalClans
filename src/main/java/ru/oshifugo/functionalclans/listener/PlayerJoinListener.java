@@ -7,8 +7,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import ru.oshifugo.functionalclans.FunctionalClans;
-import ru.oshifugo.functionalclans.sql.Clan;
-import ru.oshifugo.functionalclans.sql.Member;
+import ru.oshifugo.functionalclans.sql.Clann;
+import ru.oshifugo.functionalclans.sql.Memberr;
 
 public class PlayerJoinListener implements Listener {
 
@@ -20,9 +20,9 @@ public class PlayerJoinListener implements Listener {
             return;
         }
         Player p = e.getPlayer();
-        String clanName = Member.getClan(p.getName());
+        String clanName = Memberr.getClan(p.getName());
         if (clanName == null) return;
-        String message = Clan.getMessage(clanName);
+        String message = Clann.getMessage(clanName);
         if (message == null)  return;
         if (message.isEmpty()) return;
         message = message.replace("&", "§");

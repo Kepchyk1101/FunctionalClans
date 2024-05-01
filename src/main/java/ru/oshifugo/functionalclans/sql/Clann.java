@@ -10,11 +10,13 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
-public class Clan {
+public class Clann {
+
     public static String getClanRealName(String clanName) {
       String s = SQLiteUtility.clans.get(clanName)[0];
         return s;
     }
+
     public static String getClanNameUID(String UID) {
         String s = "";
         ArrayList<String> clansList = getlistClans();
@@ -26,18 +28,15 @@ public class Clan {
         }
         return s;
     }
-    public static void togglePVP(String clanName) {
-        setPVP(clanName, !getPVP(clanName));
-    }
-    public static boolean getPVP(String clanName) {
-        return Objects.equals(SQLiteUtility.clans.get(clanName)[20], "1");
-    }
+
     public static String getLeader(String clanName) {
         return SQLiteUtility.clans.get(clanName)[1];
     }
+
     public static Integer getCash(String clanName) {
         return Integer.valueOf(SQLiteUtility.clans.get(clanName)[2]);
     }
+
     public static Integer getRating(String clanName) {
         return Integer.valueOf(SQLiteUtility.clans.get(clanName)[3]);
     }
@@ -142,12 +141,7 @@ public class Clan {
         }
         return true;
     }
-    public static boolean hasClanName(String clanName) {
-        for(String keys: getlistClans()) {
-            if (keys.toLowerCase().equalsIgnoreCase(clanName.toLowerCase())) { return false; }
-        }
-        return true;
-    }
+
     public static boolean hasRole(String clanName, Integer rank, Integer role) {
         if (rank == 5) {return true;}
         if (SQLiteUtility.clan_role.get(clanName + "_" + rank)[role].equalsIgnoreCase("1") || SQLiteUtility.clan_role.get(clanName + "_" + rank)[role].equalsIgnoreCase("true")) {
@@ -183,33 +177,6 @@ public class Clan {
                 String.valueOf(bool), clanName, String.valueOf(rank));
 
     }
-    public static void setMessage(String clanName, String message) {
-        SQLiteUtility.clans.get(clanName)[10] = message;
-        SQLite.execute("UPDATE clan_list SET message = ? WHERE name = ?", message, clanName);
-    }
-    public static void setSocial(String clanName, String message) {
-        SQLiteUtility.clans.get(clanName)[7] = String.valueOf(message);
-        SQLite.execute("UPDATE clan_list SET social = ? WHERE name = ?", message, clanName);
-    }
-    public static void setStatus(String clanName, String message) {
-        SQLiteUtility.clans.get(clanName)[6] = message;
-        SQLite.execute("UPDATE clan_list SET status = ? WHERE name = ?", message, clanName);
-
-    }
-    public static void setMax_player(String clanName, String count) {
-        SQLiteUtility.clans.get(clanName)[9] = count;
-        SQLite.execute("UPDATE clan_list SET max_player = ? WHERE name = ?", count, clanName);
-    }
-    public static void setVerification(String clanName, String bool) {
-        SQLiteUtility.clans.get(clanName)[8] = bool;
-        SQLite.execute("UPDATE clan_list SET verification = ? WHERE name = ?", bool, clanName);
-    }
-    public static void setCash (String clanName, String cash) {
-        SQLiteUtility.clans.get(clanName)[2] = cash;
-        SQLite.execute("UPDATE clan_list SET cash = ? WHERE name = ?", cash, clanName);
-
-    }
-
     public static void setHome(String clanName, String world, double x, double y, double z, float xcur, float ycur) {
         SQLiteUtility.clans.get(clanName)[11] = world;
         SQLiteUtility.clans.get(clanName)[12] = String.valueOf(x);
@@ -219,16 +186,7 @@ public class Clan {
         SQLiteUtility.clans.get(clanName)[16] = String.valueOf(ycur);
         SQLite.execute("UPDATE clan_list SET world='" + world + "', x='" + x + "', y='" + y + "', z='" + z + "', xcur='" + xcur + "', ycur='" + ycur + "' WHERE name='" + clanName + "'");
     }
-    public static void setType(String clanName, Integer type) {
-        SQLiteUtility.clans.get(clanName)[4] = String.valueOf(type);
-        CompletableFuture.runAsync(() -> SQLite.execute("UPDATE clan_list SET type = ? WHERE name = ?", String.valueOf(type), clanName));
 
-    }
-    public static void setPVP(String clanName, boolean isActive) {
-        String raw = isActive ? "1" : "0";
-        SQLiteUtility.clans.get(clanName)[20] = raw;
-        CompletableFuture.runAsync(() -> SQLite.execute("UPDATE clan_list SET pvp = ? WHERE name = ?", raw, clanName));
-    }
     public static void setLeader(String clanName, String newLeader) {
         String leader = getLeader(clanName);
         SQLiteUtility.clans.get(clanName)[1] = newLeader;
@@ -240,7 +198,7 @@ public class Clan {
 
     }
     public static void setClanName(String clanName, String newName) {
-        ArrayList<String> m_c = Member.getMembers(clanName);
+        ArrayList<String> m_c = Memberr.getMembers(clanName);
         for (int i = 0; i < m_c.size(); i++) {
             SQLiteUtility.members.get(m_c.get(i))[2] = newName;
             SQLiteUtility.member_clan.put(m_c.get(i), newName);
@@ -270,25 +228,25 @@ public class Clan {
     }
     public static void chat(String clanName, String memberName, String message) {
         String msg = "";
-        for (int i = 0; i < Member.getMembers(clanName).size(); i++) {
-            if (Bukkit.getOfflinePlayer(Member.getMembers(clanName).get(i)).isOnline()) {
-                Bukkit.getPlayer(Member.getMembers(clanName).get(i)).sendMessage(Utility.hex("&f[&7@&f] " + Member.getRankName(clanName, memberName) + " &7[" + Bukkit.getPlayer(memberName).getName() + "&7]: &f" + message));
+        for (int i = 0; i < Memberr.getMembers(clanName).size(); i++) {
+            if (Bukkit.getOfflinePlayer(Memberr.getMembers(clanName).get(i)).isOnline()) {
+                Bukkit.getPlayer(Memberr.getMembers(clanName).get(i)).sendMessage(Utility.hex("&f[&7@&f] " + Memberr.getRankName(clanName, memberName) + " &7[" + Bukkit.getPlayer(memberName).getName() + "&7]: &f" + message));
             }
         }
     }
     public static void msg(String clanName, String memberName, String message) {
         String msg = "";
-        for (int i = 0; i < Member.getMembers(clanName).size(); i++) {
-            if (Bukkit.getOfflinePlayer(Member.getMembers(clanName).get(i)).isOnline()) {
-                Bukkit.getPlayer(Member.getMembers(clanName).get(i)).sendMessage(Utility.hex("&f[&4@&f] " + Member.getRankName(clanName, memberName) + " &7[" + Bukkit.getPlayer(memberName).getName() + "&7]: &a" + message));
+        for (int i = 0; i < Memberr.getMembers(clanName).size(); i++) {
+            if (Bukkit.getOfflinePlayer(Memberr.getMembers(clanName).get(i)).isOnline()) {
+                Bukkit.getPlayer(Memberr.getMembers(clanName).get(i)).sendMessage(Utility.hex("&f[&4@&f] " + Memberr.getRankName(clanName, memberName) + " &7[" + Bukkit.getPlayer(memberName).getName() + "&7]: &a" + message));
             }
         }
     }
     public static void broadcast(String clanName, String message) {
         String msg = "";
-        for (int i = 0; i < Member.getMembers(clanName).size(); i++) {
-            if (Bukkit.getOfflinePlayer(Member.getMembers(clanName).get(i)).isOnline()) {
-                Bukkit.getPlayer(Member.getMembers(clanName).get(i)).sendMessage(Utility.hex("&f[&c@&f]: " + message));
+        for (int i = 0; i < Memberr.getMembers(clanName).size(); i++) {
+            if (Bukkit.getOfflinePlayer(Memberr.getMembers(clanName).get(i)).isOnline()) {
+                Bukkit.getPlayer(Memberr.getMembers(clanName).get(i)).sendMessage(Utility.hex("&f[&c@&f]: " + message));
             }
         }
     }

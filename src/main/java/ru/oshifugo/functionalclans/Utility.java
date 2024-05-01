@@ -9,8 +9,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import ru.oshifugo.functionalclans.sql.Clan;
-import ru.oshifugo.functionalclans.sql.Member;
+import ru.oshifugo.functionalclans.sql.Clann;
+import ru.oshifugo.functionalclans.sql.Memberr;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,7 +33,7 @@ public class Utility {
 //    }
 
     public static String getRawClan(String name) {
-        for (String clan : Clan.getlistClans()) {
+        for (String clan : Clann.getlistClans()) {
             if (getRawName(clan).equals(getRawName(name))) {
                 return clan;
             }
@@ -95,7 +95,7 @@ public class Utility {
         ranks.put("fc.top", -1);
         ranks.put("fc.stats", -1);
 
-        String clanName = Member.getClan(player.getName());
+        String clanName = Memberr.getClan(player.getName());
 //        Clan.getRank(sender.getName()) > Clan.getRank(Bukkit.getOfflinePlayer(args[1]).getName())
         List<String> perms = Arrays.asList(_perms);
         AtomicBoolean returnValue = new AtomicBoolean(false);
@@ -112,10 +112,10 @@ public class Utility {
                 returnValue.set(true);
             }
             if (clanName == null) return;
-            else if (rank == -2 && Clan.getLeader(clanName).equals(player.getName())) {
+            else if (rank == -2 && Clann.getLeader(clanName).equals(player.getName())) {
                returnValue.set(true);
             }
-            else if (rank != -1 && rank != -2 && Clan.hasRole(clanName, Integer.valueOf(Member.getRank(player.getName())), rank)) {
+            else if (rank != -1 && rank != -2 && Clann.hasRole(clanName, Integer.valueOf(Memberr.getRank(player.getName())), rank)) {
                 returnValue.set(true);
             }
 
@@ -126,6 +126,10 @@ public class Utility {
     public static String config(String cfg) {
         cfg = FunctionalClans.getInstance().getConfig().getString(cfg);
         return cfg;
+    }
+
+    public static int configInt(String cfg) {
+        return FunctionalClans.getInstance().getConfig().getInt(cfg);
     }
 
     public static boolean configBoolean(String cfg) {

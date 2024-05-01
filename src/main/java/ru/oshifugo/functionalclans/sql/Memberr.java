@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Member {
+public class Memberr {
 
     public static <K, V> Set<K> getKeys(Map<K, V> map, V value) {
         Set<K> keys = new HashSet<>();
@@ -41,7 +41,7 @@ public class Member {
         return rank;
     }
     public static String getRankName(String clanName, String MEMBERName) {
-        String rankName = Clan.getRoleName(clanName, Integer.valueOf(getRank(MEMBERName)));
+        String rankName = Clann.getRoleName(clanName, Integer.valueOf(getRank(MEMBERName)));
         return rankName;
     }
     public static boolean hasClan(String clanName, String player) {

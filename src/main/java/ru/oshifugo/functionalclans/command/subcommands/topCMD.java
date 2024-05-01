@@ -4,8 +4,8 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import ru.oshifugo.functionalclans.Utility;
-import ru.oshifugo.functionalclans.sql.Clan;
-import ru.oshifugo.functionalclans.sql.Member;
+import ru.oshifugo.functionalclans.sql.Clann;
+import ru.oshifugo.functionalclans.sql.Memberr;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -119,7 +119,7 @@ public class topCMD {
         sender.spigot().sendMessage(message);
         } else {
             if (args[0].equals("top")) {
-                if (Member.getClan(sender.getName()) == null) {
+                if (Memberr.getClan(sender.getName()) == null) {
                     sender.sendMessage(Utility.hex(prefix + Utility.lang(sender,"top.text_0")));
                     return;
                 }
@@ -128,7 +128,7 @@ public class topCMD {
                     String[] func = new String[]{"rating", "members", "kills", "deaths", "kdr"};
                     cash = sorting(sender, new String[]{"top", func[i], "max"});
                     for (int i1 = 0; i1 < cash.size(); i1++) {
-                        if (cash.get(i1).getName().equals(Member.getClan(sender.getName()))) {
+                        if (cash.get(i1).getName().equals(Memberr.getClan(sender.getName()))) {
                             String text = "";
                             switch (func[i]) {
                                 case "rating": text = Utility.lang(sender,"top.text_3"); break;
@@ -175,37 +175,37 @@ public class topCMD {
         ArrayList<topCMD> cash = new ArrayList<topCMD>();
 
         if (args[0].equals("top") && (args[1].equals("rating") || args[1].equals("kills") || args[1].equals("deaths") || args[1].equals("members") || args[1].equals("kdr"))) {
-            ArrayList<String> clans = Clan.getlistClans();
+            ArrayList<String> clans = Clann.getlistClans();
             for (int i = 0; i < clans.size(); i++) {
                 if (type.equals("rating")) {
-                    topCMD count = new topCMD(clans.get(i), Clan.getRating(clans.get(i)));
+                    topCMD count = new topCMD(clans.get(i), Clann.getRating(clans.get(i)));
                     cash.add(count);
                 } else if (type.equals("kills")) {
-                    ArrayList<String> membersList = Member.getMembers(clans.get(i));
+                    ArrayList<String> membersList = Memberr.getMembers(clans.get(i));
                     int kills = 0;
                     for (int i1 = 0; i1 < membersList.size(); i1++) {
-                        kills = kills + Integer.parseInt(Member.getKills(membersList.get(i1)));
+                        kills = kills + Integer.parseInt(Memberr.getKills(membersList.get(i1)));
                     }
                     topCMD count = new topCMD(clans.get(i), kills);
                     cash.add(count);
                 } else if (type.equals("deaths")) {
-                    ArrayList<String> membersList = Member.getMembers(clans.get(i));
+                    ArrayList<String> membersList = Memberr.getMembers(clans.get(i));
                     int deaths = 0;
                     for (int i1 = 0; i1 < membersList.size(); i1++) {
-                        deaths = deaths + Integer.parseInt(Member.getDeaths(membersList.get(i1)));
+                        deaths = deaths + Integer.parseInt(Memberr.getDeaths(membersList.get(i1)));
                     }
                     topCMD count = new topCMD(clans.get(i), deaths);
                     cash.add(count);
                 } else if (type.equals("members")) {
-                    topCMD count = new topCMD(clans.get(i), Member.getCount(clans.get(i)));
+                    topCMD count = new topCMD(clans.get(i), Memberr.getCount(clans.get(i)));
                     cash.add(count);
                 } else if (type.equals("kdr")) {
                     int kills = 0;
                     int deaths = 0;
-                    ArrayList<String> membersList = Member.getMembers(clans.get(i));
+                    ArrayList<String> membersList = Memberr.getMembers(clans.get(i));
                     for (int i1 = 0; i1 < membersList.size(); i1++) {
-                        kills = kills + Integer.parseInt(Member.getKills(membersList.get(i1)));
-                        deaths = deaths + Integer.parseInt(Member.getDeaths(membersList.get(i1)));
+                        kills = kills + Integer.parseInt(Memberr.getKills(membersList.get(i1)));
+                        deaths = deaths + Integer.parseInt(Memberr.getDeaths(membersList.get(i1)));
                     }
                     if (kills > 0 && deaths == 0) {
                         topCMD count = new topCMD(clans.get(i), 100);
@@ -220,23 +220,23 @@ public class topCMD {
                 }
             }
         } else if (args[0].equals("stats") && (args[1].equals("rating") || args[1].equals("kills") || args[1].equals("deaths") || args[1].equals("kdr"))) {
-            if (Member.getClan(sender.getName()) == null) {
+            if (Memberr.getClan(sender.getName()) == null) {
                 return null;
             }
-            ArrayList<String> clan_members = Member.getMembers(Member.getClan(sender.getName()));
-            for (int i = 0; i < Member.getMembers(Member.getClan(sender.getName())).size(); i++) {
+            ArrayList<String> clan_members = Memberr.getMembers(Memberr.getClan(sender.getName()));
+            for (int i = 0; i < Memberr.getMembers(Memberr.getClan(sender.getName())).size(); i++) {
                 if (type.equals("rating")) {
-                    topCMD count = new topCMD(clan_members.get(i), Integer.parseInt(Member.getRating(clan_members.get(i))));
+                    topCMD count = new topCMD(clan_members.get(i), Integer.parseInt(Memberr.getRating(clan_members.get(i))));
                     cash.add(count);
                 } else if (type.equals("kills")) {
-                    topCMD count = new topCMD(clan_members.get(i), Integer.parseInt(Member.getKills(clan_members.get(i))));
+                    topCMD count = new topCMD(clan_members.get(i), Integer.parseInt(Memberr.getKills(clan_members.get(i))));
                     cash.add(count);
                 } else if (type.equals("deaths")) {
-                    topCMD count = new topCMD(clan_members.get(i), Integer.parseInt(Member.getDeaths(clan_members.get(i))));
+                    topCMD count = new topCMD(clan_members.get(i), Integer.parseInt(Memberr.getDeaths(clan_members.get(i))));
                     cash.add(count);
                 } else if (type.equals("kdr")) {
-                    int kills = Integer.parseInt(Member.getKills(clan_members.get(i)));
-                    int deaths = Integer.parseInt(Member.getDeaths(clan_members.get(i)));
+                    int kills = Integer.parseInt(Memberr.getKills(clan_members.get(i)));
+                    int deaths = Integer.parseInt(Memberr.getDeaths(clan_members.get(i)));
                     ;
                     if (kills > 0 && deaths == 0) {
                         topCMD count = new topCMD(clan_members.get(i), 100);

@@ -4,8 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import ru.oshifugo.functionalclans.sql.Clan;
-import ru.oshifugo.functionalclans.sql.Member;
+import ru.oshifugo.functionalclans.sql.Clann;
+import ru.oshifugo.functionalclans.sql.Memberr;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +22,7 @@ public class CommandsTab implements TabCompleter {
         if (members.containsKey(sender.getName())) {
             memberName = members.get(sender.getName())[0].toLowerCase();
             clanName = members.get(sender.getName())[2];
-            leaderName = Clan.getLeader(clanName);
+            leaderName = Clann.getLeader(clanName);
         }
 
         TabAccessor tabAccessor = new TabAccessor(sender, args);
@@ -68,15 +68,15 @@ public class CommandsTab implements TabCompleter {
 //        **   ally part   **
 //        *******************
             tabAccessor.addList("fc.ally", "ally", Arrays.asList("add", "remove"));
-            tabAccessor.addList("fc.ally", "ally.add", Clan.getlistUID());
-            tabAccessor.addList("fc.ally", "ally.remove", Clan.getlistUID());
+            tabAccessor.addList("fc.ally", "ally.add", Clann.getlistUID());
+            tabAccessor.addList("fc.ally", "ally.remove", Clann.getlistUID());
 //        **     other     **
             tabAccessor.addList("fc.cash", "cash", Arrays.asList("add", "remove"));
             tabAccessor.addList("fc.type", "***.type", Arrays.asList("0", "1"));
-            tabAccessor.addList("fc.kick", "kick", Member.getMembers(clanName));
-            tabAccessor.addList("fc.addrank", "addrank", Member.getMembers(clanName));
-            tabAccessor.addList("fc.removerank", "removerank", Member.getMembers(clanName));
-            tabAccessor.addList("fc.leader", "leader", Member.getMembers(clanName));
+            tabAccessor.addList("fc.kick", "kick", Memberr.getMembers(clanName));
+            tabAccessor.addList("fc.addrank", "addrank", Memberr.getMembers(clanName));
+            tabAccessor.addList("fc.removerank", "removerank", Memberr.getMembers(clanName));
+            tabAccessor.addList("fc.leader", "leader", Memberr.getMembers(clanName));
             tabAccessor.addList("fc.stats", "stats", Arrays.asList("rating", "kills", "deaths", "kdr"));
             tabAccessor.addList("fc.top", "top", Arrays.asList("rating", "members", "kills", "deaths", "kdr"));
             tabAccessor.addList("fc.invite", "invite", playerNamesList);

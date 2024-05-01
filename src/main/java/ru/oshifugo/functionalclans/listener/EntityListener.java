@@ -8,8 +8,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.projectiles.ProjectileSource;
-import ru.oshifugo.functionalclans.sql.Clan;
-import ru.oshifugo.functionalclans.sql.Member;
+import ru.oshifugo.functionalclans.entity.Clan;
+import ru.oshifugo.functionalclans.entity.Member;
+import ru.oshifugo.functionalclans.sql.Clann;
+import ru.oshifugo.functionalclans.sql.Memberr;
+import ru.oshifugo.functionalclans.sql.SQLiteUtility;
 
 public class EntityListener implements Listener {
 
@@ -28,10 +31,15 @@ public class EntityListener implements Listener {
             damager = (Entity) shooter;
         }
 
-        String clanName = Member.getClan(damager.getName());
-        if (clanName == null) return;
-        if (!clanName.equals(Member.getClan(damaged.getName()))) return;
-        if (Clan.getPVP(clanName)) return;
+        Clan clan = SQLiteUtility.getClanByMemberName(damager.getName());
+        if (clan == null || clan.isPvp()) return;
+
+        for (Member member : clan.getMembers()) {
+            if (member.getName().equals(damaged.getName())) {
+                return;
+            }
+        }
+
         event.setCancelled(true);
     }
 
@@ -43,10 +51,15 @@ public class EntityListener implements Listener {
 
         if (!(combusted instanceof Player) || !(combuster instanceof Player)) return;
 
-        String clanName = Member.getClan(combusted.getName());
-        if (clanName == null) return;
-        if (!clanName.equals(Member.getClan(combuster.getName()))) return;
-        if (Clan.getPVP(clanName)) return;
+        Clan clan = SQLiteUtility.getClanByMemberName(combusted.getName());
+        if (clan == null || clan.isPvp()) return;
+
+        for (Member member : clan.getMembers()) {
+            if (member.getName().equals(combuster.getName())) {
+                return;
+            }
+        }
+
         event.setCancelled(true);
 
     }

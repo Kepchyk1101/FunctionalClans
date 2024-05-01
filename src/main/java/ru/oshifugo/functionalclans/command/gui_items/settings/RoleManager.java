@@ -10,8 +10,8 @@ import ru.oshifugo.functionalclans.Utility;
 import ru.oshifugo.functionalclans.command.ClanGUI;
 import ru.oshifugo.functionalclans.command.gui_items.ItemsBase;
 import ru.oshifugo.functionalclans.command.gui_items.Root;
-import ru.oshifugo.functionalclans.sql.Clan;
-import ru.oshifugo.functionalclans.sql.Member;
+import ru.oshifugo.functionalclans.sql.Clann;
+import ru.oshifugo.functionalclans.sql.Memberr;
 import ru.oshifugo.functionalclans.sql.SQLiteUtility;
 import xyz.xenondevs.invui.gui.Gui;
 import xyz.xenondevs.invui.gui.structure.Structure;
@@ -25,7 +25,7 @@ public class RoleManager extends ItemsBase {
 
     public int row;
     public static void display(Player player, ClanGUI ui) {
-        String clanName = Member.getClan(player.getName());
+        String clanName = Memberr.getClan(player.getName());
         if (clanName == null) {
             Utility.debug("displayRow -> clanName == 0");
             return;
@@ -169,7 +169,7 @@ public class RoleManager extends ItemsBase {
             player.sendMessage(getTranslate().get("other.perm-lack", true));
             return;
         }
-        Clan.setRole(Member.getClan(player.getName()), row, getRoleNumber(id));
+        Clann.setRole(Memberr.getClan(player.getName()), row, getRoleNumber(id));
         display(player, getUi());
     }
 }

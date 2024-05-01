@@ -11,8 +11,8 @@ import ru.oshifugo.functionalclans.command.gui_items.settings.Message;
 import ru.oshifugo.functionalclans.command.gui_items.settings.Rename;
 import ru.oshifugo.functionalclans.command.gui_items.settings.Social;
 import ru.oshifugo.functionalclans.command.gui_items.settings.Status;
-import ru.oshifugo.functionalclans.sql.Clan;
-import ru.oshifugo.functionalclans.sql.Member;
+import ru.oshifugo.functionalclans.sql.Clann;
+import ru.oshifugo.functionalclans.sql.Memberr;
 import xyz.xenondevs.invui.gui.Gui;
 import xyz.xenondevs.invui.gui.structure.Structure;
 import xyz.xenondevs.invui.item.builder.ItemBuilder;
@@ -67,7 +67,7 @@ public class ClanGUI {
 
 
     public void home(Player player) {
-        if (Member.getClan(player.getName()) == null) {
+        if (Memberr.getClan(player.getName()) == null) {
             gui = null;
             player.sendMessage(GUITranslate.getTranslate(player).get("other.clan-lack", true));
             return;
@@ -116,7 +116,7 @@ public class ClanGUI {
         );
         if (members.containsKey(p.getName())) {
             String clanName = members.get(p.getName())[2];
-            gui.setItem(0, 0, Message.oldMessage(this, player, Clan.getMessage(clanName)));
+            gui.setItem(0, 0, Message.oldMessage(this, player, Clann.getMessage(clanName)));
         }
         Message newMessage = Message.newMessage(this, player);
         gui.setItem(2, 0, newMessage);
@@ -130,7 +130,7 @@ public class ClanGUI {
         );
         if (members.containsKey(p.getName())) {
             String clanName = members.get(p.getName())[2];
-            gui.setItem(0, 0, Status.oldStatus(this, player, Clan.getStatus(clanName)));
+            gui.setItem(0, 0, Status.oldStatus(this, player, Clann.getStatus(clanName)));
         }
         Status newStatus = Status.newStatus(this, player);
         gui.setItem(2, 0, newStatus);
@@ -145,7 +145,7 @@ public class ClanGUI {
         );
         if (members.containsKey(p.getName())) {
             String clanName = members.get(p.getName())[2];
-            gui.setItem(0, 0, Social.oldSocial(this, player, Clan.getSocial(clanName)));
+            gui.setItem(0, 0, Social.oldSocial(this, player, Clann.getSocial(clanName)));
         }
         Social newSocial = Social.newSocial(this, player);
         gui.setItem(2, 0, newSocial);

@@ -10,8 +10,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import ru.oshifugo.functionalclans.FunctionalClans;
 import ru.oshifugo.functionalclans.Utility;
-import ru.oshifugo.functionalclans.sql.Clan;
-import ru.oshifugo.functionalclans.sql.Member;
+import ru.oshifugo.functionalclans.sql.Clann;
+import ru.oshifugo.functionalclans.sql.Memberr;
 import ru.oshifugo.functionalclans.sql.SQLiteUtility;
 
 public class AdminClanCommands implements CommandExecutor {
@@ -21,7 +21,7 @@ public class AdminClanCommands implements CommandExecutor {
         if (!sender.hasPermission("fc.admin." + permission)) {
             sender.sendMessage(Utility.hex(Utility.lang(sender,"common_errors.no_permission")));
             return true;
-        } else if (Clan.hasUID(UID)) {
+        } else if (Clann.hasUID(UID)) {
             sender.sendMessage(Utility.hex(prefix + Utility.lang(sender,"common_errors.no_clan_uid")));
             return true;
         }
@@ -101,17 +101,14 @@ public class AdminClanCommands implements CommandExecutor {
                 sender.sendMessage(Utility.hex(Utility.lang(sender,"common_errors.no_permission")));
                 return true;
             } else if (args.length == 2) {
-                if (Clan.hasUID(args[1])) {
+                if (Clann.hasUID(args[1])) {
                     sender.sendMessage(Utility.hex(prefix + Utility.lang(sender,"common_errors.no_clan_uid")));
                     return true;
                 }
-                String bool = "false";
-                if (Clan.getVerification(Clan.getClanNameUID(args[1])) == false) {
-                    bool = "true";
-                }
-                Clan.setVerification(Clan.getClanNameUID(args[1]), bool);
+                boolean bool = !Clann.getVerification(Clann.getClanNameUID(args[1]));
+                SQLiteUtility.getClanByName(Clann.getClanNameUID(args[1])).setVerification(bool);
                 sender.sendMessage(Utility.hex(prefix + Utility.lang(sender,"fc.verify.message.msg")));
-                Clan.broadcast(Clan.getClanNameUID(args[1]), Utility.lang(sender,"fc.verify.message.msg1"));
+                Clann.broadcast(Clann.getClanNameUID(args[1]), Utility.lang(sender,"fc.verify.message.msg1"));
                 return true;
             }
             sender.sendMessage(Utility.hex(String.format(Utility.lang(sender,"help.msg"), command.getName(), args[0]) + "\n" + String.format(Utility.lang(sender,"help.msg1"), Utility.lang(sender, String.format("fc.%s.errors.e", args[0])))));
@@ -124,42 +121,42 @@ public class AdminClanCommands implements CommandExecutor {
             if (check(sender, "info", args[1])) {
                 return true;
             }
-            String  clanName = Clan.getClanNameUID(args[1]);
-            TextComponent text = new TextComponent(Utility.hex("\n" + Utility.lang(sender,"commands.info.message-fc.line_1") + Clan.getClanRealName(clanName) + " "));
+            String  clanName = Clann.getClanNameUID(args[1]);
+            TextComponent text = new TextComponent(Utility.hex("\n" + Utility.lang(sender,"commands.info.message-fc.line_1") + Clann.getClanRealName(clanName) + " "));
             TextComponent ver;
             TextComponent social;
             TextComponent online;
-            if (Clan.getVerification(clanName)) {
+            if (Clann.getVerification(clanName)) {
                 ver = new TextComponent(Utility.hex(Utility.lang(sender,"main.true") + "\n"));
             } else {
                 ver = new TextComponent(Utility.hex(Utility.lang(sender,"main.false") + "\n"));
             }
-            ver.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_1-1") + Clan.getDate(clanName) + "\n" + Utility.lang(sender,"commands.info.message-fc.line_1-3") + Clan.getUID(clanName) + "\n" + Utility.lang(sender,"commands.info.message-fc.line_1-2") + Clan.getCreator(clanName))).create()));
+            ver.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_1-1") + Clann.getDate(clanName) + "\n" + Utility.lang(sender,"commands.info.message-fc.line_1-3") + Clann.getUID(clanName) + "\n" + Utility.lang(sender,"commands.info.message-fc.line_1-2") + Clann.getCreator(clanName))).create()));
             text.addExtra(ver);
-            text.addExtra(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_2") + Clan.getLeader(clanName) + "\n"));
-            text.addExtra(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_3") + Clan.getCash(clanName) + "\n"));
-            text.addExtra(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_4") + Clan.getRating(clanName) + "\n"));
-            if (Clan.getType(clanName) == 0) {
+            text.addExtra(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_2") + Clann.getLeader(clanName) + "\n"));
+            text.addExtra(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_3") + Clann.getCash(clanName) + "\n"));
+            text.addExtra(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_4") + Clann.getRating(clanName) + "\n"));
+            if (Clann.getType(clanName) == 0) {
                 text.addExtra(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_5") + Utility.lang(sender,"main.closed") + "\n"));
             } else {
                 text.addExtra(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_5") + Utility.lang(sender,"main.open") + "\n"));
             }
-            text.addExtra(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_6") + Clan.getTax(clanName) + "\n"));
-            if (!Clan.getStatus(clanName).equalsIgnoreCase("null")) {
-                text.addExtra(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_7") + Clan.getStatus(clanName) + "\n"));
+            text.addExtra(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_6") + Clann.getTax(clanName) + "\n"));
+            if (!Clann.getStatus(clanName).equalsIgnoreCase("null")) {
+                text.addExtra(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_7") + Clann.getStatus(clanName) + "\n"));
             }
-            if (!Clan.getSocial(clanName).equalsIgnoreCase("null")) {
+            if (!Clann.getSocial(clanName).equalsIgnoreCase("null")) {
                 text.addExtra(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_8")));
-                social = new TextComponent(Utility.hex(Clan.getSocial(clanName)) + "\n");
-                social.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://" + Clan.getSocial(clanName)));
+                social = new TextComponent(Utility.hex(Clann.getSocial(clanName)) + "\n");
+                social.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://" + Clann.getSocial(clanName)));
                 text.addExtra(social);
             }
-            online = new TextComponent(Utility.hex(String.format(Utility.lang(sender,"commands.info.message-fc.line_9"), Member.getCount(clanName), Clan.getMax_player(clanName)) + "\n"));
-            online.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_9-1") + Member.getOnlineCount(clanName))).create()));
+            online = new TextComponent(Utility.hex(String.format(Utility.lang(sender,"commands.info.message-fc.line_9"), Memberr.getCount(clanName), Clann.getMax_player(clanName)) + "\n"));
+            online.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_9-1") + Memberr.getOnlineCount(clanName))).create()));
             online.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/fc members " + args[1]));
             text.addExtra(online);
-            if (!Clan.getMessage(clanName).equalsIgnoreCase("")) {
-                text.addExtra(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_10") + Clan.getMessage(clanName)) + "\n");
+            if (!Clann.getMessage(clanName).equalsIgnoreCase("")) {
+                text.addExtra(Utility.hex(Utility.lang(sender,"commands.info.message-fc.line_10") + Clann.getMessage(clanName)) + "\n");
             }
             sender.spigot().sendMessage(text);
             return true;
@@ -171,63 +168,63 @@ public class AdminClanCommands implements CommandExecutor {
             if (check(sender, "members", args[1])) {
                 return true;
             }
-            String  clanName = Clan.getClanNameUID(args[1]);
+            String  clanName = Clann.getClanNameUID(args[1]);
             String role_5 = "";
             String role_4 = "";
             String role_3 = "";
             String role_2 = "";
             String role_1 = "";
-            for (int i = 0; i < Member.getMembers(clanName).size(); i++) {
-                int role = Integer.valueOf(Member.getRank(Member.getMembers(clanName).get(i)));
+            for (int i = 0; i < Memberr.getMembers(clanName).size(); i++) {
+                int role = Integer.valueOf(Memberr.getRank(Memberr.getMembers(clanName).get(i)));
                 if (role == 1) {
-                    if (Bukkit.getOfflinePlayer(Member.getMembers(clanName).get(i)).isOnline()) {
+                    if (Bukkit.getOfflinePlayer(Memberr.getMembers(clanName).get(i)).isOnline()) {
                         if (role_1.length() != 0) {
-                            role_1 = role_1 + Utility.hex(", &a") + Member.getMembers(clanName).get(i);
-                        } else role_1 = Utility.hex("\n" + Clan.getRoleName(clanName, 1) + "&a: " + Member.getMembers(clanName).get(i));
+                            role_1 = role_1 + Utility.hex(", &a") + Memberr.getMembers(clanName).get(i);
+                        } else role_1 = Utility.hex("\n" + Clann.getRoleName(clanName, 1) + "&a: " + Memberr.getMembers(clanName).get(i));
                     } else {
                         if (role_1.length() != 0) {
-                            role_1 = role_1 +  Utility.hex(", &2") + Member.getMembers(clanName).get(i);
-                        } else role_1 = Utility.hex("\n" + Clan.getRoleName(clanName, 1) + "&a:&2 " + Member.getMembers(clanName).get(i));
+                            role_1 = role_1 +  Utility.hex(", &2") + Memberr.getMembers(clanName).get(i);
+                        } else role_1 = Utility.hex("\n" + Clann.getRoleName(clanName, 1) + "&a:&2 " + Memberr.getMembers(clanName).get(i));
                     }
                 } else if (role == 2) {
-                    if (Bukkit.getOfflinePlayer(Member.getMembers(clanName).get(i)).isOnline()) {
+                    if (Bukkit.getOfflinePlayer(Memberr.getMembers(clanName).get(i)).isOnline()) {
                         if (role_2.length() != 0) {
-                            role_2 = role_2 + Utility.hex(", &a") + Member.getMembers(clanName).get(i);
-                        } else role_2 = Utility.hex("\n" + Clan.getRoleName(clanName, 2) + "&a: " + Member.getMembers(clanName).get(i));
+                            role_2 = role_2 + Utility.hex(", &a") + Memberr.getMembers(clanName).get(i);
+                        } else role_2 = Utility.hex("\n" + Clann.getRoleName(clanName, 2) + "&a: " + Memberr.getMembers(clanName).get(i));
                     } else {
                         if (role_2.length() != 0) {
-                            role_2 = role_2 +  Utility.hex(", &2") + Member.getMembers(clanName).get(i);
-                        } else role_2 = Utility.hex("\n" + Clan.getRoleName(clanName, 2) + "&a:&2 " + Member.getMembers(clanName).get(i));
+                            role_2 = role_2 +  Utility.hex(", &2") + Memberr.getMembers(clanName).get(i);
+                        } else role_2 = Utility.hex("\n" + Clann.getRoleName(clanName, 2) + "&a:&2 " + Memberr.getMembers(clanName).get(i));
                     }
                 } else if (role == 3) {
-                    if (Bukkit.getOfflinePlayer(Member.getMembers(clanName).get(i)).isOnline()) {
+                    if (Bukkit.getOfflinePlayer(Memberr.getMembers(clanName).get(i)).isOnline()) {
                         if (role_3.length() != 0) {
-                            role_3 = role_3 + Utility.hex(", &a") + Member.getMembers(clanName).get(i);
-                        } else role_3 = Utility.hex("\n" + Clan.getRoleName(clanName, 3) + "&a: " + Member.getMembers(clanName).get(i));
+                            role_3 = role_3 + Utility.hex(", &a") + Memberr.getMembers(clanName).get(i);
+                        } else role_3 = Utility.hex("\n" + Clann.getRoleName(clanName, 3) + "&a: " + Memberr.getMembers(clanName).get(i));
                     } else {
                         if (role_3.length() != 0) {
-                            role_3 = role_3 +  Utility.hex(", &2") + Member.getMembers(clanName).get(i);
-                        } else role_3 = Utility.hex("\n" + Clan.getRoleName(clanName, 3) + "&a:&2 " + Member.getMembers(clanName).get(i));
+                            role_3 = role_3 +  Utility.hex(", &2") + Memberr.getMembers(clanName).get(i);
+                        } else role_3 = Utility.hex("\n" + Clann.getRoleName(clanName, 3) + "&a:&2 " + Memberr.getMembers(clanName).get(i));
                     }
                 } else if (role == 4) {
-                    if (Bukkit.getOfflinePlayer(Member.getMembers(clanName).get(i)).isOnline()) {
+                    if (Bukkit.getOfflinePlayer(Memberr.getMembers(clanName).get(i)).isOnline()) {
                         if (role_4.length() != 0) {
-                            role_4 = role_4 + Utility.hex(", &a") + Member.getMembers(clanName).get(i);
-                        } else role_4 = Utility.hex("\n" + Clan.getRoleName(clanName, 4) + "&a: " + Member.getMembers(clanName).get(i));
+                            role_4 = role_4 + Utility.hex(", &a") + Memberr.getMembers(clanName).get(i);
+                        } else role_4 = Utility.hex("\n" + Clann.getRoleName(clanName, 4) + "&a: " + Memberr.getMembers(clanName).get(i));
                     } else {
                         if (role_4.length() != 0) {
-                            role_4 = role_4 +  Utility.hex(", &2") + Member.getMembers(clanName).get(i);
-                        } else role_4 = Utility.hex("\n" + Clan.getRoleName(clanName, 4) + "&a:&2 " + Member.getMembers(clanName).get(i));
+                            role_4 = role_4 +  Utility.hex(", &2") + Memberr.getMembers(clanName).get(i);
+                        } else role_4 = Utility.hex("\n" + Clann.getRoleName(clanName, 4) + "&a:&2 " + Memberr.getMembers(clanName).get(i));
                     }
                 } else if (role == 5) {
-                    if (Bukkit.getOfflinePlayer(Member.getMembers(clanName).get(i)).isOnline()) {
+                    if (Bukkit.getOfflinePlayer(Memberr.getMembers(clanName).get(i)).isOnline()) {
                         if (role_5.length() != 0) {
-                            role_5 = role_5 + Utility.hex(", &a")  + Member.getMembers(clanName).get(i);
-                        } else role_5 = Utility.hex("\n" + Clan.getRoleName(clanName, 5) + "&a: " + Member.getMembers(clanName).get(i));
+                            role_5 = role_5 + Utility.hex(", &a")  + Memberr.getMembers(clanName).get(i);
+                        } else role_5 = Utility.hex("\n" + Clann.getRoleName(clanName, 5) + "&a: " + Memberr.getMembers(clanName).get(i));
                     } else {
                         if (role_5.length() != 0) {
-                            role_5 = role_5 +  Utility.hex(", &2")  + Member.getMembers(clanName).get(i);
-                        } else role_5 = Utility.hex("\n" + Clan.getRoleName(clanName, 5) + "&a:&2 " + Member.getMembers(clanName).get(i));
+                            role_5 = role_5 +  Utility.hex(", &2")  + Memberr.getMembers(clanName).get(i);
+                        } else role_5 = Utility.hex("\n" + Clann.getRoleName(clanName, 5) + "&a:&2 " + Memberr.getMembers(clanName).get(i));
                     }
                 }
             }
@@ -242,7 +239,7 @@ public class AdminClanCommands implements CommandExecutor {
             if (check(sender, "delete", args[1])) {
                 return true;
             }
-            String clanName = Clan.getClanNameUID(args[1]);
+            String clanName = Clann.getClanNameUID(args[1]);
             SQLiteUtility.delete(clanName);
             sender.sendMessage(Utility.hex(prefix + Utility.lang(sender,"commands.delete.message.msg")));
             return true;
@@ -254,14 +251,14 @@ public class AdminClanCommands implements CommandExecutor {
             if (check(sender, "leader", args[1])) {
                 return true;
             }
-            String clanName = Clan.getClanNameUID(args[1]);
+            String clanName = Clann.getClanNameUID(args[1]);
             if (Bukkit.getOfflinePlayer(args[2]).hasPlayedBefore()) {
                 if (SQLiteUtility.member_clan.get(Bukkit.getOfflinePlayer(args[2]).getName()) == null) {
                     sender.sendMessage(Utility.hex(prefix + Utility.lang(sender,"common_errors.no_player_clans")));
                     return true;
                 }
                 if (SQLiteUtility.member_clan.get(Bukkit.getOfflinePlayer(args[2]).getName()).equalsIgnoreCase(clanName)) {
-                    Clan.setLeader(clanName, Bukkit.getOfflinePlayer(args[2]).getName());
+                    Clann.setLeader(clanName, Bukkit.getOfflinePlayer(args[2]).getName());
                     sender.sendMessage(Utility.hex(prefix + Utility.lang(sender,"fc.leader.message.msg") + Bukkit.getOfflinePlayer(args[2]).getName()));
                 } else sender.sendMessage(Utility.hex(prefix + Utility.lang(sender,"common_errors.no_player_clan")));
             } else sender.sendMessage(Utility.hex(prefix + Utility.lang(sender,"common_errors.no_player")));

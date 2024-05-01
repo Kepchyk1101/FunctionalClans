@@ -13,8 +13,8 @@ import ru.oshifugo.functionalclans.GUITranslate;
 import ru.oshifugo.functionalclans.command.ClanGUI;
 import ru.oshifugo.functionalclans.command.gui_items.ItemsBase;
 import ru.oshifugo.functionalclans.command.gui_items.Root;
-import ru.oshifugo.functionalclans.sql.Clan;
-import ru.oshifugo.functionalclans.sql.Member;
+import ru.oshifugo.functionalclans.sql.Clann;
+import ru.oshifugo.functionalclans.sql.Memberr;
 import xyz.xenondevs.invui.gui.Gui;
 import xyz.xenondevs.invui.gui.PagedGui;
 import xyz.xenondevs.invui.gui.structure.Markers;
@@ -41,7 +41,7 @@ public class Members extends ItemsBase {
 //        } else if (params.equals("player_rating")) {
 //        }
     public static ItemsBase getMember(OfflinePlayer player, ClanGUI ui) {
-        String clanName = Member.getClan(player.getName());
+        String clanName = Memberr.getClan(player.getName());
         String online;
 
         if (player.isOnline()) {
@@ -52,11 +52,11 @@ public class Members extends ItemsBase {
         return new Members(player, ui, player.getName(), getHead(player.getName()), player.getName())
                 .setTranslatedLore("members.member")
                 .replaceLore("{name}", player.getName())
-                .replaceLore("{player_rank}", Member.getRankName(clanName, player.getName()))
-                .replaceLore("{player_kills}", Member.getKills(player.getName()))
-                .replaceLore("{player_deaths}", Member.getDeaths(player.getName()))
-                .replaceLore("{player_kdr}", Member.getKDR(player.getName()))
-                .replaceLore("{player_rating}", Member.getRating(player.getName()))
+                .replaceLore("{player_rank}", Memberr.getRankName(clanName, player.getName()))
+                .replaceLore("{player_kills}", Memberr.getKills(player.getName()))
+                .replaceLore("{player_deaths}", Memberr.getDeaths(player.getName()))
+                .replaceLore("{player_kdr}", Memberr.getKDR(player.getName()))
+                .replaceLore("{player_rating}", Memberr.getRating(player.getName()))
                 .replaceLore("{online}", online)
                 .replaceLore("&", "§");
     }
@@ -66,9 +66,9 @@ public class Members extends ItemsBase {
         ui.gui = Gui.empty(9, 5);
 
         Window.single();
-        String clanName = Member.getClan(player.getName());
+        String clanName = Memberr.getClan(player.getName());
         if (clanName == null) return;
-        List<String> members = Member.getMembers(clanName);
+        List<String> members = Memberr.getMembers(clanName);
         List<Item> players = new ArrayList<>();
         Collections.sort(members);
 
@@ -99,11 +99,11 @@ public class Members extends ItemsBase {
 
     @Override
     public void handleClick(@NotNull ClickType clickType, @NotNull Player player, @NotNull InventoryClickEvent inventoryClickEvent, String id) {
-        String clanName = Member.getClan(id);
+        String clanName = Memberr.getClan(id);
         if (clanName == null) {
             return;
         }
-        if (!clanName.equals(Member.getClan(player.getName()))) {
+        if (!clanName.equals(Memberr.getClan(player.getName()))) {
             player.sendMessage("Wow... Calm down, man");
             return;
         }
@@ -116,8 +116,8 @@ public class Members extends ItemsBase {
             player.sendMessage(getTranslate().get("members.self-click", true));
             return;
         }
-        int rank = Integer.parseInt(Member.getRank(id));
-        int playerRank = Integer.parseInt(Member.getRank(player.getName()));
+        int rank = Integer.parseInt(Memberr.getRank(id));
+        int playerRank = Integer.parseInt(Memberr.getRank(player.getName()));
 
         if (rank >= playerRank) {
             player.sendMessage(getTranslate().get("members.cannot-manage", true));
@@ -127,7 +127,7 @@ public class Members extends ItemsBase {
             player.sendMessage(getTranslate().get("members.leader-manage", true));
             return;
         }
-        if (!Clan.hasRole(clanName, Integer.valueOf(Member.getRank(player.getName())), 6)) { // 6 - rmanage
+        if (!Clann.hasRole(clanName, Integer.valueOf(Memberr.getRank(player.getName())), 6)) { // 6 - rmanage
             player.sendMessage(getTranslate().get("other.perm-lack", true));
             return;
         }
@@ -141,8 +141,8 @@ public class Members extends ItemsBase {
             if (kickedPlayer != null) {
                 kickedPlayer.sendMessage(getTranslate().get("members.you-hb-kicked", true));
             }
-            Clan.kick(clanName, id);
-            Member.getMembers(clanName).forEach(member -> {
+            Clann.kick(clanName, id);
+            Memberr.getMembers(clanName).forEach(member -> {
                 Player memberPlayer = Bukkit.getServer().getPlayer(member);
                 if (memberPlayer == null) return;
                 memberPlayer.sendMessage(getTranslate().get("members.kick-propaganda", true)
@@ -160,18 +160,18 @@ public class Members extends ItemsBase {
                 player.sendMessage(getTranslate().get("members.lowest-rank", true));
                 return;
             }
-            Clan.removerank(id);
+            Clann.removerank(id);
             player.sendMessage(getTranslate().get("members.was-demoted")
                     .replace("{player}", player.getName())
                     .replace("{demoted}", id)
-                    .replace("{rank}", Member.getRankName(clanName, id))
+                    .replace("{rank}", Memberr.getRankName(clanName, id))
                     .replace("&", "§"));
             Player playerId = Bukkit.getServer().getPlayer(id);
             if (playerId != null) {
                 playerId.sendMessage(getTranslate().get("members.was-demoted")
                         .replace("{player}", player.getName())
                         .replace("{demoted}", id)
-                        .replace("{rank}", Member.getRankName(clanName, id))
+                        .replace("{rank}", Memberr.getRankName(clanName, id))
                         .replace("&", "§"));
             }
             display(player, getUi());
@@ -186,18 +186,18 @@ public class Members extends ItemsBase {
                 player.sendMessage(getTranslate().get("members.highest-rank", true));
                 return;
             }
-            Clan.addrank(id);
+            Clann.addrank(id);
             player.sendMessage(getTranslate().get("members.was-promoted")
                     .replace("{player}", player.getName())
                     .replace("{promoted}", id)
-                    .replace("{rank}", Member.getRankName(clanName, id))
+                    .replace("{rank}", Memberr.getRankName(clanName, id))
                     .replace("&", "§"));
             Player playerId = Bukkit.getServer().getPlayer(id);
             if (playerId != null) {
                 playerId.sendMessage(getTranslate().get("members.was-promoted")
                         .replace("{player}", player.getName())
                         .replace("{promoted}", id)
-                        .replace("{rank}", Member.getRankName(clanName, id))
+                        .replace("{rank}", Memberr.getRankName(clanName, id))
                         .replace("&", "§"));
             }
             display(player, getUi());

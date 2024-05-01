@@ -8,11 +8,11 @@ import org.jetbrains.annotations.NotNull;
 import ru.oshifugo.functionalclans.Utility;
 import ru.oshifugo.functionalclans.command.ClanGUI;
 import ru.oshifugo.functionalclans.command.gui_items.settings.*;
-import ru.oshifugo.functionalclans.sql.Clan;
+import ru.oshifugo.functionalclans.sql.Clann;
+import ru.oshifugo.functionalclans.sql.SQLiteUtility;
 
 public class Settings extends ItemsBase {
 
-    private boolean isOpened;
     private String clanName;
 
     public static Settings message(ClanGUI ui, Player player) {
@@ -40,7 +40,7 @@ public class Settings extends ItemsBase {
                 .setTranslatedName("settings.type")
                 .setTranslatedLore("settings.type");
         type.clanName = clanName;
-        if (Clan.getType(clanName) == 0) {
+        if (Clann.getType(clanName) == 0) {
             type.replaceLore("{now}", type.getTranslate().get("settings.type.closed"));
         } else {
             type.replaceLore("{now}", type.getTranslate().get("settings.type.open"));
@@ -53,7 +53,7 @@ public class Settings extends ItemsBase {
                 .setTranslatedName("settings.pvp")
                 .setTranslatedLore("settings.pvp");
         type.clanName = clanName;
-        if (Clan.getPVP(clanName)) {
+        if (SQLiteUtility.getClanByName(clanName).isPvp()) {
             type.replaceLore("{now}", type.getTranslate().get("settings.pvp.enabled"));
         } else {
             type.replaceLore("{now}", type.getTranslate().get("settings.pvp.disabled"));
@@ -120,15 +120,15 @@ public class Settings extends ItemsBase {
                     player.sendMessage(getTranslate().get("other.perm-lack", true));
                     break;
                 }
-                if (Clan.getType(clanName) == 0) {
-                    Clan.setType(clanName, 1);
+                if (Clann.getType(clanName) == 0) {
+                    SQLiteUtility.getClanByName(clanName).setType(1);
                 } else {
-                    Clan.setType(clanName, 0);
+                    SQLiteUtility.getClanByName(clanName).setType(0);
                 }
 
                 setTranslatedName("settings.type");
                 setTranslatedLore("settings.type");
-                if (Clan.getType(clanName) == 0) {
+                if (Clann.getType(clanName) == 0) {
                     replaceLore("{now}", getTranslate().get("settings.type.closed"));
                 } else {
                     replaceLore("{now}", getTranslate().get("settings.type.open"));
@@ -144,10 +144,10 @@ public class Settings extends ItemsBase {
                     player.sendMessage(getTranslate().get("other.perm-lack", true));
                     break;
                 }
-                Clan.togglePVP(clanName);
+                SQLiteUtility.getClanByName(clanName).togglePvp();
                 setTranslatedName("settings.pvp");
                 setTranslatedLore("settings.pvp");
-                if (Clan.getPVP(clanName)) {
+                if (SQLiteUtility.getClanByName(clanName).isPvp()) {
                     replaceLore("{now}", getTranslate().get("settings.pvp.enabled"));
                 } else {
                     replaceLore("{now}", getTranslate().get("settings.pvp.disabled"));

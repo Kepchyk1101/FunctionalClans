@@ -13,7 +13,8 @@ import ru.oshifugo.functionalclans.FunctionalClans;
 import ru.oshifugo.functionalclans.Utility;
 import ru.oshifugo.functionalclans.command.ClanGUI;
 import ru.oshifugo.functionalclans.command.gui_items.ItemsBase;
-import ru.oshifugo.functionalclans.sql.Clan;
+import ru.oshifugo.functionalclans.sql.Clann;
+import ru.oshifugo.functionalclans.sql.SQLiteUtility;
 import xyz.xenondevs.invui.item.builder.ItemBuilder;
 
 import java.util.Arrays;
@@ -100,7 +101,7 @@ public class Rename extends ItemsBase{
                         player.sendMessage(getTranslate().get("other.charged", true).replace( "{money}", String.valueOf(price)));
                     }
                     String clanName = members.get(player.getName())[2];
-                    Clan.setClanName(clanName, renamed);
+                    Clann.setClanName(clanName, renamed);
                     player.sendMessage(getTranslate().get("rename.done", true));
 
                 }

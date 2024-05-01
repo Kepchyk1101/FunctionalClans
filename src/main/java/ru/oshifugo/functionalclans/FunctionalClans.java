@@ -1,5 +1,9 @@
 package ru.oshifugo.functionalclans;
 
+import com.j256.ormlite.jdbc.JdbcConnectionSource;
+import com.j256.ormlite.support.ConnectionSource;
+import lombok.Getter;
+import lombok.SneakyThrows;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -8,10 +12,13 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.oshifugo.functionalclans.command.AdminClanCommands;
 import ru.oshifugo.functionalclans.command.ClanCommands;
+import ru.oshifugo.functionalclans.factory.connection.ConnectionFactoryImpl;
 import ru.oshifugo.functionalclans.listener.EntityListener;
 import ru.oshifugo.functionalclans.listener.PlayerDeathListener;
 import ru.oshifugo.functionalclans.listener.PlayerJoinListener;
 import ru.oshifugo.functionalclans.listener.SalaryListener;
+import ru.oshifugo.functionalclans.repository.impl.ClanRepository;
+import ru.oshifugo.functionalclans.repository.impl.MemberRepository;
 import ru.oshifugo.functionalclans.sql.SQLite;
 import ru.oshifugo.functionalclans.tabcomplete.AdminTab;
 import ru.oshifugo.functionalclans.tabcomplete.CommandsTab;
@@ -29,8 +36,21 @@ public final class FunctionalClans extends JavaPlugin {
 
     public static HashMap<String, String[]> placeholders_config = new HashMap<>();
 
+    @Getter
+    private ConnectionSource connectionSource;
+    @Getter
+    private ClanRepository clanRepository;
+    @Getter
+    private MemberRepository memberRepository;
+
+    @SneakyThrows
     @Override
     public void onEnable() {
+
+        connectionSource = new ConnectionFactoryImpl(this).createConnection();
+
+        clanRepository = new ClanRepository(connectionSource);
+        memberRepository = new MemberRepository(connectionSource);
 
         long time = System.currentTimeMillis();
 
@@ -114,8 +134,10 @@ public final class FunctionalClans extends JavaPlugin {
         placeholders_config.put("placeholder_null_list", Utility.configList("placeholder_null_list"));
     }
 
+    @SneakyThrows
     @Override
     public void onDisable() {
+        connectionSource.close();
         SQLite.disconnect();
         instance = null;
         Utility.info(Utility.hex("<#FF00FF>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
