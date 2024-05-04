@@ -89,7 +89,7 @@ public final class FunctionalClans extends JavaPlugin {
 //            saveResource("message.yml", false);
 //        }
         hashConfig();
-        new Metrics(this, 	17919);
+        new Metrics(this, 17919);
         new Expansion().register();
         Utility.info(Utility.hex("<#FF00FF>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
         Utility.info(Utility.hex("<#00CED1>Successfully enabled. &7(" + ChatColor.YELLOW + (System.currentTimeMillis() - time) + " ms" + ChatColor.GREEN + "&7)"));
@@ -117,10 +117,10 @@ public final class FunctionalClans extends JavaPlugin {
     @Override
     public void onDisable() {
         SQLite.disconnect();
-        instance = null;
         Utility.info(Utility.hex("<#FF00FF>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
         Utility.info(Utility.hex("<#00CED1>Plugin disabled."));
         Utility.info(Utility.hex("<#FF00FF>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
+        instance = null;
     }
 
     public static FunctionalClans getInstance() {
