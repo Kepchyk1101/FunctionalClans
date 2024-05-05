@@ -2,13 +2,17 @@ package ru.oshifugo.functionalclans.sql;
 
 import ru.oshifugo.functionalclans.FunctionalClans;
 import ru.oshifugo.functionalclans.Utility;
+import ru.oshifugo.functionalclans.sql.mapper.ClanItemMapper;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SQLite {
+
+    private static final ClanItemMapper CLAN_ITEM_MAPPER = new ClanItemMapper();
     public static Connection connection = null;
-    public static ResultSet resultSet = null;
 
     public static void connect() {
         try {
@@ -31,10 +35,29 @@ public class SQLite {
             execute("CREATE TABLE IF NOT EXISTS `clan_members` (`id` varchar(255) NOT NULL ,`name` varchar(255) NOT NULL,`role` varchar(255) NOT NULL,`clan` varchar(255) NOT NULL,`kills` varchar(255) NOT NULL,`death` varchar(255) NOT NULL,`quest` varchar(255) NOT NULL,`rating` varchar(255) NOT NULL)");
             execute("CREATE TABLE IF NOT EXISTS `clan_permissions` (`id` varchar(255) NOT NULL,`clan` varchar(255) NOT NULL,`role` varchar(255) NOT NULL,`role_name` varchar(255) NOT NULL,`kick` boolean NOT NULL,`invite` boolean NOT NULL,`cash_add` boolean NOT NULL,`cash_remove` boolean NOT NULL,`rmanage` boolean NOT NULL,`chat` boolean NOT NULL,`msg` boolean NOT NULL,`alliance_add` boolean NOT NULL,`alliance_remove` boolean NOT NULL)");
             execute("CREATE TABLE IF NOT EXISTS `clan_alliance` (`id` varchar(255) NOT NULL, `UID_1` varchar(255) NOT NULL, `UID_2` varchar(255) NOT NULL)");
+            execute("CREATE TABLE IF NOT EXISTS `clan_chest` (" +
+                    "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "`clan_id` INT, " +
+                    "`slot` TINYINT, " +
+                    "`page` TINYINT, " +
+                    "`itemstack` TEXT" +
+                    ");");
+
             update2p1p0();
+
+            addClanChestColumnToClanTable();
+
         } catch (Exception e) {
             e.printStackTrace();
             Utility.error("An error occurred while connecting to the database.");
+        }
+    }
+
+    private static void addClanChestColumnToClanTable() {
+        try {
+            connection.createStatement().execute("ALTER TABLE `clan_list` ADD COLUMN `chest_pages` TINYINT DEFAULT 1;");
+        } catch (SQLException ignored) {
+
         }
     }
 
@@ -45,19 +68,8 @@ public class SQLite {
         }
     }
 
-
-    public static boolean hasConnected() {
-        try {
-            return !connection.isClosed();
-        } catch (Exception var1) {
-            return false;
-        }
-    }
     @Deprecated
     public static void execute(String query) {
-        if (!hasConnected()) {
-            connect();
-        }
         Utility.debug("Sended Query: " + query);
         try {
             connection.createStatement().execute(query);
@@ -67,10 +79,7 @@ public class SQLite {
         }
     }
 
-    public static void execute(String sql, String... args) {
-        if (!hasConnected()) {
-            connect();
-        }
+    public static void execute(String sql, Object... args) {
         PreparedStatement pstmt;
         try {
             pstmt = connection.prepareStatement(sql);
@@ -82,27 +91,39 @@ public class SQLite {
             e.printStackTrace();
         }
     }
-    public static ResultSet executeQuery(String query) {
-        if (!hasConnected()) {
-            connect();
-        }
-        Utility.debug("Sended Query: " + query);
-        ResultSet rs = null;
+
+    public static ResultSet executeQuery(String query, Object... args) {
+        Utility.debug("Sending query: " + query);
+        ResultSet resultSet = null;
         try {
-            rs = connection.createStatement().executeQuery(query);
-        } catch (Exception var3) {
-            var3.printStackTrace();
+            PreparedStatement prSt = connection.prepareStatement(query);
+            for (int i = 0; i < args.length; i++) {
+                prSt.setObject(i + 1, args[i]);
+            }
+            resultSet = prSt.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return rs;
+        return resultSet;
     }
+
     public static void getClans() {
         try {
             int a, b, p, d;
             try {
-                resultSet = executeQuery("SELECT * FROM clan_list");
+                ResultSet resultSet = executeQuery("SELECT * FROM clan_list");
                 for (a = 0; resultSet.next(); a++) {
-                    String[] clan = {resultSet.getString("name"), resultSet.getString("leader"), resultSet.getString("cash"), resultSet.getString("rating"), resultSet.getString("type"), resultSet.getString("tax"), resultSet.getString("status"), resultSet.getString("social"), resultSet.getString("verification"), resultSet.getString("max_player"), resultSet.getString("message"), resultSet.getString("world"), resultSet.getString("x"), resultSet.getString("y"), resultSet.getString("z"), resultSet.getString("xcur"), resultSet.getString("ycur"), resultSet.getString("date"), resultSet.getString("uid"), resultSet.getString("creator"), resultSet.getString("pvp")};
-                    SQLiteUtility.clans.put(resultSet.getString("name"), clan);
+                    String clanName = resultSet.getString("name");
+                    String[] clan = {clanName, resultSet.getString("leader"), resultSet.getString("cash"), resultSet.getString("rating"), resultSet.getString("type"), resultSet.getString("tax"), resultSet.getString("status"), resultSet.getString("social"), resultSet.getString("verification"), resultSet.getString("max_player"), resultSet.getString("message"), resultSet.getString("world"), resultSet.getString("x"), resultSet.getString("y"), resultSet.getString("z"), resultSet.getString("xcur"), resultSet.getString("ycur"), resultSet.getString("date"), resultSet.getString("uid"), resultSet.getString("creator"), resultSet.getString("pvp"), resultSet.getString("chest_pages")};
+                    SQLiteUtility.clans.put(clanName, clan);
+
+                    ResultSet clanChestRs = executeQuery("SELECT * FROM `clan_chest` WHERE `clan_id` = ?;", resultSet.getInt("id"));
+                    List<ClanItem> clanItems = new ArrayList<>();
+                    while (clanChestRs.next()) {
+                        clanItems.add(CLAN_ITEM_MAPPER.mapRow(clanChestRs));
+                    }
+
+                    SQLiteUtility.clanChests.put(clanName, new ClanChest(resultSet.getInt("id"), resultSet.getInt("chest_pages"), clanItems));
                 }
             } catch (Exception errors) {
                 a = -1;
@@ -110,7 +131,7 @@ public class SQLite {
                 errors.printStackTrace();
             }
             try {
-                resultSet = executeQuery("SELECT * FROM clan_members");
+                ResultSet resultSet = executeQuery("SELECT * FROM clan_members");
                 for (b = 0; resultSet.next(); b++) {
                     String[] m = {resultSet.getString("name"), resultSet.getString("role"), resultSet.getString("clan"), resultSet.getString("kills"), resultSet.getString("death"), resultSet.getString("quest"), resultSet.getString("rating")};
                     SQLiteUtility.members.put(resultSet.getString("name"), m);
@@ -122,7 +143,7 @@ public class SQLite {
                 errors.printStackTrace();
             }
             try {
-                resultSet = executeQuery("SELECT * FROM clan_permissions");
+                ResultSet resultSet = executeQuery("SELECT * FROM clan_permissions");
                 for (p = 0; resultSet.next(); p++) {
                     String[] role = {resultSet.getString("role"), resultSet.getString("role_name"), resultSet.getString("kick"), resultSet.getString("invite"), resultSet.getString("cash_add"), resultSet.getString("cash_remove"), resultSet.getString("rmanage"), resultSet.getString("chat"), resultSet.getString("msg"), resultSet.getString("alliance_add"), resultSet.getString("alliance_remove")};
 
@@ -134,7 +155,7 @@ public class SQLite {
                 errors.printStackTrace();
             }
             try {
-                resultSet = executeQuery("SELECT * FROM clan_alliance");
+                ResultSet resultSet = executeQuery("SELECT * FROM clan_alliance");
                 for (d = 0; resultSet.next(); d++) {
                     String[] alliance = {resultSet.getString("UID_1"), resultSet.getString("UID_2")};
 

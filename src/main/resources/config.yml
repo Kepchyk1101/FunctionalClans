@@ -109,6 +109,19 @@ min_name: 3
 max_name: 30
 # Maximum length of the clan status
 max_status: 7
+# Number of available pages in the clan chest when creating a clan (1 page = 45 slots)
+chest_pages: 1
+
+chest:
+  title: '&eClan storage | Page №%page%'
+  next_page:
+    material: ARROW
+    name: '&6Next page'
+    lore: ''
+  prev_page:
+    material: ARROW
+    name: '&6Previous page'
+    lore: ''
 
 
 # *** Clan Economy ***

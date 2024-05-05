@@ -243,7 +243,7 @@ public class AdminClanCommands implements CommandExecutor {
                 return true;
             }
             String clanName = Clan.getClanNameUID(args[1]);
-            SQLiteUtility.delete(clanName);
+            SQLiteUtility.deleteAsync(clanName);
             sender.sendMessage(Utility.hex(prefix + Utility.lang(sender,"commands.delete.message.msg")));
             return true;
         } else if (args[0].equalsIgnoreCase("leader")) {

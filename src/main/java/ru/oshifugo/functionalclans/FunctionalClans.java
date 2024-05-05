@@ -1,5 +1,6 @@
 package ru.oshifugo.functionalclans;
 
+import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -8,10 +9,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.oshifugo.functionalclans.command.AdminClanCommands;
 import ru.oshifugo.functionalclans.command.ClanCommands;
-import ru.oshifugo.functionalclans.listener.EntityListener;
-import ru.oshifugo.functionalclans.listener.PlayerDeathListener;
-import ru.oshifugo.functionalclans.listener.PlayerJoinListener;
-import ru.oshifugo.functionalclans.listener.SalaryListener;
+import ru.oshifugo.functionalclans.listener.*;
 import ru.oshifugo.functionalclans.sql.SQLite;
 import ru.oshifugo.functionalclans.tabcomplete.AdminTab;
 import ru.oshifugo.functionalclans.tabcomplete.CommandsTab;
@@ -22,10 +20,14 @@ import java.util.HashMap;
 
 public final class FunctionalClans extends JavaPlugin {
 
+    @Getter
     private static FunctionalClans instance;
 
+    @Getter
     private GUITranslate lang;
-    private static Economy econ = null;
+
+    @Getter
+    private static Economy economy = null;
 
     public static HashMap<String, String[]> placeholders_config = new HashMap<>();
 
@@ -85,6 +87,8 @@ public final class FunctionalClans extends JavaPlugin {
         lang = GUITranslate.getInstance();
         saveDefaultConfig();
 
+        new ClanStorageListener(this);
+
 //        if (!new File(getDataFolder(), "message.yml").exists()) {
 //            saveResource("message.yml", false);
 //        }
@@ -104,8 +108,8 @@ public final class FunctionalClans extends JavaPlugin {
         if (rsp == null) {
             return false;
         }
-        econ = rsp.getProvider();
-        return econ != null;
+        economy = rsp.getProvider();
+        return economy != null;
     }
 
     public static void hashConfig() {
@@ -123,28 +127,17 @@ public final class FunctionalClans extends JavaPlugin {
         instance = null;
     }
 
-    public static FunctionalClans getInstance() {
-        return instance;
-    }
-
-    public GUITranslate getLang() {
-        return lang;
-    }
-
     public int getDBVersion() {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
         int r = config.getInt("db-ver");
         return r;
     }
+
     public void setDBVersion(int value) throws IOException {
         File file = new File(getDataFolder(), "config.yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         config.set("db-ver", value);
         config.save(file);
-    }
-
-    public static Economy getEconomy() {
-        return econ;
     }
 
 }

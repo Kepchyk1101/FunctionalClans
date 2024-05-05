@@ -1,5 +1,8 @@
-package ru.oshifugo.functionalclans.sql.tables;
+package ru.oshifugo.functionalclans.entity;
 
+/*
+    ! For future !
+ */
 public class ClanList {
     int id;
     String name;

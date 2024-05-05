@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.jetbrains.annotations.NotNull;
 import ru.oshifugo.functionalclans.sql.Clan;
 import ru.oshifugo.functionalclans.sql.Member;
 
@@ -15,10 +16,13 @@ import static ru.oshifugo.functionalclans.sql.SQLiteUtility.members;
 
 public class CommandsTab implements TabCompleter {
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command,
+                                      @NotNull String alias, @NotNull String[] args) {
+
         String memberName = null;
         String clanName = null;
         String leaderName = null;
+
         if (members.containsKey(sender.getName())) {
             memberName = members.get(sender.getName())[0].toLowerCase();
             clanName = members.get(sender.getName())[2];
@@ -64,6 +68,7 @@ public class CommandsTab implements TabCompleter {
             tabAccessor.add("fc.ally", "ally");
             tabAccessor.add("fc.top", "top");
             tabAccessor.add("fc.stats", "stats");
+            tabAccessor.add("fc.chest", "chest");
 //        *******************
 //        **   ally part   **
 //        *******************
@@ -93,6 +98,8 @@ public class CommandsTab implements TabCompleter {
             tabAccessor.add("fc.addrank", "addrank");
             tabAccessor.add("fc.removerank", "removerank");
         }
+
         return tabAccessor.getCommands();
+
     }
 }
