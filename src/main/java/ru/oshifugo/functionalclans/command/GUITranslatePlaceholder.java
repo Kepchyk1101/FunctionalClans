@@ -1,21 +1,21 @@
 package ru.oshifugo.functionalclans.command;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 import ru.oshifugo.functionalclans.FunctionalClans;
 
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public class GUITranslatePlaceholder {
-    OfflinePlayer player;
-    protected String lang;
-    protected YamlConfiguration yml;
-
-
-    public GUITranslatePlaceholder(OfflinePlayer player, String lang, YamlConfiguration yml) {
-        this.player = player;
-        this.lang = lang;
-        this.yml = yml;
-    }
+    
+    @NotNull OfflinePlayer player;
+    @NotNull String lang;
+    @NotNull YamlConfiguration yml;
 
     public String get(String path) {
         String res = yml.getString(path);
@@ -45,6 +45,7 @@ public class GUITranslatePlaceholder {
         return get(path + ".name");
 
     }
+
     public String getLore(String path) {
         Object res = yml.get(path);
         if (res != null && yml.get(path + ".lore") == null) {
@@ -52,4 +53,5 @@ public class GUITranslatePlaceholder {
         }
         return get(path + ".lore");
     }
+    
 }

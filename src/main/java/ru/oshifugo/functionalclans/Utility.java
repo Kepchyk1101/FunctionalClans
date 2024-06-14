@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.util.FileUtil;
 import ru.oshifugo.functionalclans.sql.Clan;
 import ru.oshifugo.functionalclans.sql.Member;
 
@@ -27,10 +28,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utility {
-//    public static String ColorTratslate(String msg) {
-//        msg = ChatColor.translateAlternateColorCodes('&', msg);
-//        return msg;
-//    }
 
     public static String getRawClan(String name) {
         for (String clan : Clan.getlistClans()) {
@@ -46,7 +43,7 @@ public class Utility {
         StringBuilder total = new StringBuilder();
         for (int i = 0; i < name.length(); i++) {
             if (name.charAt(i) == '&' || name.charAt(i) == '§') {
-                i ++;
+                i++;
                 continue;
             }
             total.append(name.charAt(i));
@@ -64,7 +61,7 @@ public class Utility {
 //        ranks.put("fc.rmanage", 6);
         ranks.put("fc.chat", 7);
         ranks.put("fc.msg", 8);
-        ranks.put("fc.alliance_add",9);
+        ranks.put("fc.alliance_add", 9);
         ranks.put("fc.alliance_remove", 10);
         //
         //
@@ -108,14 +105,13 @@ public class Utility {
             if (!player.hasPermission(perm)) {
                 return;
             }
-            if (rank == -1){
+            if (rank == -1) {
                 returnValue.set(true);
             }
             if (clanName == null) return;
             else if (rank == -2 && Clan.getLeader(clanName).equals(player.getName())) {
-               returnValue.set(true);
-            }
-            else if (rank != -1 && rank != -2 && Clan.hasRole(clanName, Integer.valueOf(Member.getRank(player.getName())), rank)) {
+                returnValue.set(true);
+            } else if (rank != -1 && rank != -2 && Clan.hasRole(clanName, Integer.valueOf(Member.getRank(player.getName())), rank)) {
                 returnValue.set(true);
             }
 
@@ -135,7 +131,7 @@ public class Utility {
     }
 
     public static String[] configList(String cfg) {
-        List<String> myArray =  FunctionalClans.getInstance().getConfig().getStringList(cfg);
+        List<String> myArray = FunctionalClans.getInstance().getConfig().getStringList(cfg);
         String[] response = myArray.toArray(new String[myArray.size()]);
         int i = 0;
         for (String element : myArray) {
@@ -144,16 +140,7 @@ public class Utility {
         }
         return response;
     }
-//    public static String lang(String cfg) {
-//        if (Files.exists(Paths.get(Main.instance.getDataFolder() + "/message.yml"))) {
-//            File langYml = new File(Main.instance.getDataFolder()+"/message.yml");
-//            FileConfiguration langConfig = YamlConfiguration.loadConfiguration(langYml);
-//            if (langConfig.getString(utility.config("lang") + "." + cfg) == null) {
-//                cfg = " There was an error in message.yml. The required key could not be found. Recheck the values.";
-//            } else cfg = langConfig.getString(utility.config("lang") + "."  + cfg);
-//        } else cfg = " Could not find message.yml file";
-//        return cfg;
-//    }
+
     private static void copyInputStreamToFile(InputStream inputStream, File file)
             throws IOException {
 
@@ -167,9 +154,10 @@ public class Utility {
         }
 
     }
+
     public static String lang(CommandSender sender, String cfg) {
         if (Files.exists(Paths.get(FunctionalClans.getInstance().getDataFolder() + "/message.yml"))) {
-            File langYml = new File(FunctionalClans.getInstance().getDataFolder()+"/message.yml");
+            File langYml = new File(FunctionalClans.getInstance().getDataFolder() + "/message.yml");
             FileConfiguration langConfig = YamlConfiguration.loadConfiguration(langYml);
             if (langConfig.getString(Utility.config("lang") + "." + cfg) == null) {
                 File temp = new File("temp");
@@ -178,7 +166,7 @@ public class Utility {
                 try {
                     copyInputStreamToFile(stream, temp);
                     langConfig = YamlConfiguration.loadConfiguration(temp);
-                    cfg = langConfig.getString(Utility.config("lang") + "."  + cfg);
+                    cfg = langConfig.getString(Utility.config("lang") + "." + cfg);
                     if (cfg == null) {
                         cfg = " There was an error in message.yml. The required key could not be found. Recheck the values.";
                     }
@@ -186,7 +174,7 @@ public class Utility {
                     cfg = " There was an error in message.yml. The required key could not be found. Recheck the values.";
                 }
 
-            } else cfg = langConfig.getString(Utility.config("lang") + "."  + cfg);
+            } else cfg = langConfig.getString(Utility.config("lang") + "." + cfg);
         } else cfg = " Could not find message.yml file";
         if (!(sender instanceof Player)) {
             return cfg;
@@ -195,28 +183,24 @@ public class Utility {
         return PlaceholderAPI.setPlaceholders(player, cfg);
     }
 
-//    public static String quest(String cfg) {
-//        if (Files.exists(Paths.get(Main.instance.getDataFolder() + "/quest.yml"))) {
-//            File langYml = new File(Main.instance.getDataFolder()+"/quest.yml");
-//            FileConfiguration langConfig = YamlConfiguration.loadConfiguration(langYml);
-//            cfg = langConfig.getString(cfg);
-//        } else cfg = " Could not find quest.yml file";
-//        return cfg;
-//    }
     public static void info(Object text) {
         Bukkit.getConsoleSender().sendMessage(hex("[" + FunctionalClans.getInstance().getName() + "] " + text));
     }
+
     public static void warning(Object text) {
         Bukkit.getConsoleSender().sendMessage(Utility.hex("&6[" + FunctionalClans.getInstance().getName() + "] [warning]" + text));
     }
+
     public static void error(Object text) {
         Bukkit.getConsoleSender().sendMessage(hex("&4[" + FunctionalClans.getInstance().getName() + "] [ERROR] " + text));
     }
+
     public static void debug(Object text) {
         if (FunctionalClans.getInstance().getConfig().getBoolean("debug")) {
             Bukkit.getConsoleSender().sendMessage(hex("&e[" + FunctionalClans.getInstance().getName() + "] [Debug] " + text));
         }
     }
+
     public static String hex(String msg) {
         String version = Bukkit.getServer().getBukkitVersion();
         if (version.startsWith("1.15") || version.startsWith("1.14") || version.startsWith("1.13") || version.startsWith("1.12") || version.startsWith("1.11") || version.startsWith("1.10") || version.startsWith("1.9") || version.startsWith("1.8")) {
@@ -226,11 +210,11 @@ public class Utility {
             msg = ChatColor.translateAlternateColorCodes('&', msg);
             Matcher matcher = Pattern.compile("<#[A-Fa-f0-9]{6}>").matcher(msg);
             int hexAmount;
-            for(hexAmount = 0; matcher.find(); ++hexAmount) {
+            for (hexAmount = 0; matcher.find(); ++hexAmount) {
                 matcher.region(matcher.end() - 1, msg.length());
             }
             int startIndex = 0;
-            for(int hexIndex = 0; hexIndex < hexAmount; ++hexIndex) {
+            for (int hexIndex = 0; hexIndex < hexAmount; ++hexIndex) {
                 int msgIndex = msg.indexOf("<#", startIndex);
                 String hex = msg.substring(msgIndex + 1, msgIndex + 8);
                 startIndex = msgIndex + 2;
@@ -267,8 +251,9 @@ public class Utility {
             next.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format(cmd, String.valueOf(page + 1))));
         }
         msg.addExtra(back);
-        msg.addExtra(Utility.hex(String.format(Utility.lang(sender,"pages.page"), page, page_max)));
+        msg.addExtra(Utility.hex(String.format(Utility.lang(sender, "pages.page"), page, page_max)));
         msg.addExtra(next);
         return msg;
     }
+
 }

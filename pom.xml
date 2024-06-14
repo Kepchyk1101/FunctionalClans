@@ -6,7 +6,7 @@
 
     <groupId>ru.oshifugo</groupId>
     <artifactId><![CDATA[FunctionalClans]]></artifactId>
-    <version>2.2.0-beta</version>
+    <version>2.2.1-beta</version>
     <packaging>jar</packaging>
 
     <name><![CDATA[FunctionalClans&^&s]]></name>
@@ -31,7 +31,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.6.0</version>
+                <configuration>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>ru.oshifugo.functionalclans.bstats</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -101,16 +109,10 @@
             <version>bm1.5.5</version>
             <scope>provided</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>me.ford</groupId>-->
-<!--            <artifactId>salarymanager</artifactId>-->
-<!--            <version>0.5.5</version>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>xyz.xenondevs.invui</groupId>
             <artifactId>invui</artifactId>
-            <version>1.30</version>
+            <version>1.31</version>
             <type>pom</type>
         </dependency>
         <dependency>
@@ -118,6 +120,17 @@
             <artifactId>lombok</artifactId>
             <version>1.18.32</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>3.0.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>24.0.0</version>
         </dependency>
     </dependencies>
 

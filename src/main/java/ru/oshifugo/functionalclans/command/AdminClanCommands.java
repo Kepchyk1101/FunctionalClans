@@ -8,9 +8,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import ru.oshifugo.functionalclans.FunctionalClans;
 import ru.oshifugo.functionalclans.Utility;
 import ru.oshifugo.functionalclans.sql.Clan;
+import ru.oshifugo.functionalclans.sql.ClanChest;
 import ru.oshifugo.functionalclans.sql.Member;
 import ru.oshifugo.functionalclans.sql.SQLiteUtility;
 
@@ -71,6 +73,12 @@ public class AdminClanCommands implements CommandExecutor {
         if (sender.hasPermission("fc.admin.leader")) {
             TextComponent text = new TextComponent(Utility.hex(Utility.lang(sender,"fc.leader.errors.e") + "\n"));
             text.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/fc leader"));
+            message.addExtra(text);
+            i++;
+        }
+        if (sender.hasPermission("fc.admin.chest")) {
+            TextComponent text = new TextComponent(Utility.hex(Utility.lang(sender,"fc.chest.errors.e") + "\n"));
+            text.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/fc chest"));
             message.addExtra(text);
             i++;
         }
@@ -266,8 +274,36 @@ public class AdminClanCommands implements CommandExecutor {
                 } else sender.sendMessage(Utility.hex(prefix + Utility.lang(sender,"common_errors.no_player_clan")));
             } else sender.sendMessage(Utility.hex(prefix + Utility.lang(sender,"common_errors.no_player")));
             return true;
+        } else if (args[0].equalsIgnoreCase("chest")) {
+
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(Utility.hex(prefix + Utility.lang(sender,"common_errors.no_console")));
+                return true;
+            }
+
+            Player player = (Player) sender;
+
+            if (args.length != 2) {
+                sender.sendMessage(Utility.hex(String.format(Utility.lang(sender,"help.msg"), command.getName(), args[0]) + "\n" + String.format(Utility.lang(sender,"help.msg1"), Utility.lang(sender, String.format("fc.%s.errors.e", args[0])))));
+                return true;
+            }
+
+            if (check(sender, "chest", args[1])) {
+                return true;
+            }
+
+            String clanName = Clan.getClanNameUID(args[1]);
+            ClanChest clanChest = SQLiteUtility.clanChests.get(clanName);
+            clanChest.openFor(player);
+
+            return true;
+
         }
+
         help(sender);
+
         return true;
+
     }
+
 }

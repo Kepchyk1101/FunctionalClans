@@ -2,6 +2,7 @@ package ru.oshifugo.functionalclans;
 
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -36,11 +37,11 @@ public final class FunctionalClans extends JavaPlugin {
 
         long time = System.currentTimeMillis();
 
-//        gui = Gui.normal();
         instance = this;
         saveDefaultConfig();
         SQLite.connect();
         SQLite.getClans();
+
         if (!setupEconomy() ) {
             Utility.error("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             Utility.error("Disabled due to no Vault dependency found!");
@@ -48,6 +49,7 @@ public final class FunctionalClans extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") == null) {
             Utility.error("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             Utility.error("Disabled due to PlaceholderAPI dependency not found!");
@@ -55,6 +57,7 @@ public final class FunctionalClans extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
         if (getServer().getPluginManager().getPlugin("SalaryManager") != null) {
             getServer().getPluginManager().registerEvents(new SalaryListener(), this);
         }
@@ -68,7 +71,6 @@ public final class FunctionalClans extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new EntityListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
 
-//        saveResource("message.yml", true); // УБРАТЬ ПЕРЕД ОБНОВОЙ
         if (!new File(getDataFolder(), "message.yml").exists()) {
             saveResource("message.yml", false);
         }
@@ -89,15 +91,14 @@ public final class FunctionalClans extends JavaPlugin {
 
         new ClanStorageListener(this);
 
-//        if (!new File(getDataFolder(), "message.yml").exists()) {
-//            saveResource("message.yml", false);
-//        }
         hashConfig();
         new Metrics(this, 17919);
         new Expansion().register();
+
         Utility.info(Utility.hex("<#FF00FF>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
         Utility.info(Utility.hex("<#00CED1>Successfully enabled. &7(" + ChatColor.YELLOW + (System.currentTimeMillis() - time) + " ms" + ChatColor.GREEN + "&7)"));
         Utility.info(Utility.hex("<#FF00FF>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
+
     }
 
     private boolean setupEconomy() {

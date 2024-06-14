@@ -1,42 +1,39 @@
 package ru.oshifugo.functionalclans;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 import ru.oshifugo.functionalclans.command.GUITranslatePlaceholder;
 
 import java.io.File;
 
+@FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public class GUITranslate {
-    protected String lang;
-    protected File language_file;
-    protected YamlConfiguration yml;
-    protected FunctionalClans plugin;
+
+    @Getter
     private static GUITranslate instance;
+    
+    @NotNull String lang;
+    @NotNull File languageFile;
+    @NotNull YamlConfiguration yml;
+    @NotNull FunctionalClans plugin;
 
+    protected GUITranslate(@NotNull FunctionalClans plugin, @NotNull String lang) {
+        this.lang = lang;
+        this.plugin = plugin;
+        this.languageFile = new File(plugin.getDataFolder() + "/gui_lang_" + lang + ".yml");
+        yml = YamlConfiguration.loadConfiguration(languageFile);
+    }
 
-
-    public static void init(FunctionalClans plugin, String lang) {
+    public static void init(@NotNull FunctionalClans plugin, @NotNull String lang) {
         instance = new GUITranslate(plugin, lang);
     }
 
-    public static GUITranslate getInstance() {
-        return instance;
-    }
     public static GUITranslatePlaceholder getTranslate(OfflinePlayer player) {
         return new GUITranslatePlaceholder(player, getInstance().lang, getInstance().yml);
     }
-
-
-
-    protected GUITranslate(FunctionalClans plugin, String lang) {
-        this.lang = lang;
-        this.plugin = plugin;
-        this.language_file = new File(plugin.getDataFolder() +  "/gui_lang_" + lang + ".yml");
-        yml = YamlConfiguration.loadConfiguration(language_file);
-    }
-
-
-
-
-
+    
 }

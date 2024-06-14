@@ -60,6 +60,9 @@ en:
     button_6: '&7[&aSettings&7] '
     button_7: '&7[&aGeneral&7] '
   commands:
+    chest:
+      errors:
+        e: '&a/clan chest - Open clan chest'
     create:
       errors:
         e: '&a/clan create (name) - Create a clan'
@@ -344,6 +347,9 @@ en:
     delete:
       errors:
         e: '&a/fc delete (UID) - Delete clan'
+    chest:
+      errors:
+        e: '&a/fc chest (UID) - Open clan chest'
     message:
       msg: ''
     leader:
@@ -431,6 +437,9 @@ ru:
     button_6: '&7[&aНастройки&7] '
     button_7: '&7[&aОбщие&7] '
   commands:
+    chest:
+      errors:
+        e: '&a/clan chest - Открыть клановый сундук'
     create:
       errors:
         e: '&a/clan create (название) - Создание клана'
@@ -724,6 +733,9 @@ ru:
         e: '&a/fc leader (UID) (ник) - Передать лидера клана'
       message:
         msg: '&2Установлен новый лидер клана - '
+    chest:
+      errors:
+        e: '&a/fc chest (UID) - Открыть сундук клана'
   top:
     text_0: '&aВы не являетесь членом клана, чтобы просмотреть его в топе кланов'
     text_1: '&aТоп кланов по: '

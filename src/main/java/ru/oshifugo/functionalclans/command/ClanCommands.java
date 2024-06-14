@@ -353,6 +353,12 @@ public class ClanCommands implements CommandExecutor {
                 message.addExtra(text);
                 i++;
             }
+            if (sender.hasPermission("fc.chest") && clanName != null) {
+                TextComponent text = new TextComponent(Utility.hex(Utility.lang(sender,"commands.chest.errors.e") + "\n"));
+                text.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/clan chest"));
+                message.addExtra(text);
+                i++;
+            }
         }
         if (i == 0 && !type.equals("-1")) {
             message = new TextComponent();

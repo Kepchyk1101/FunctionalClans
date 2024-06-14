@@ -1,8 +1,10 @@
 package ru.oshifugo.functionalclans.command;
 
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import ru.oshifugo.functionalclans.GUITranslate;
 import ru.oshifugo.functionalclans.Utility;
 import ru.oshifugo.functionalclans.command.gui_items.Root;
@@ -24,19 +26,14 @@ import java.util.function.Consumer;
 import static ru.oshifugo.functionalclans.sql.SQLiteUtility.members;
 
 public class ClanGUI {
-    public Gui gui;
-    public AnvilWindow window;
-    Player p;
-    private ItemBuilder voidFill;
-    public Gui getGui() {
-        return gui;
-    }
 
-    public ItemBuilder getVoidFill() {
-        return voidFill;
-    }
+    @Getter public Gui gui;
+    public AnvilWindow window;
+    public Player player;
+    @Getter private final ItemBuilder voidFill;
+
+    // above 1.14 -> false
     public static boolean isSupported() {
-//        if version < 1.14: false
         String version = Bukkit.getServer().getClass().getPackage().getName();
         String[] ver = version.split("\\.");
         if (ver.length < 4) {
@@ -46,8 +43,8 @@ public class ClanGUI {
         return Integer.parseInt(ver[3].split("_")[1]) >= 14;
     }
 
-    public ClanGUI(Player player) {
-        this.p = player;
+    public ClanGUI(@NotNull Player player) {
+        this.player = player;
         voidFill = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).setDisplayName(GUITranslate.getTranslate(player).get("glass-name"));
 
     }
@@ -57,13 +54,12 @@ public class ClanGUI {
             return;
         }
         Window window = Window.single()
-                .setViewer(this.p)
+                .setViewer(this.player)
                 .setTitle(title)
                 .setGui(this.getGui())
                 .build();
         window.open();
     }
-
 
 
     public void home(Player player) {
@@ -72,19 +68,20 @@ public class ClanGUI {
             player.sendMessage(GUITranslate.getTranslate(player).get("other.clan-lack", true));
             return;
         }
-            gui = Gui.empty(9, 3);
+        gui = Gui.empty(9, 3);
         gui.applyStructure(new Structure(
-                "#########",
-                "#.......#",
-                "#########"
+                        "#########",
+                        "#.......#",
+                        "#########"
                 ).addIngredient('#', voidFill)
 
         );
-    //
+        //
         gui.setItem(2, 1, Root.settings(this, player));
         gui.setItem(4, 1, Root.information(this, player));
         gui.setItem(6, 1, Root.members(this, player));
     }
+
     public void settings(Player player) {
         gui = Gui.empty(9, 3);
         gui.applyStructure(new Structure(
@@ -94,8 +91,8 @@ public class ClanGUI {
                 .addIngredient('#', voidFill)
         );
 
-        if (members.containsKey(p.getName())) {
-            String clanName = members.get(p.getName())[2];
+        if (members.containsKey(this.player.getName())) {
+            String clanName = members.get(this.player.getName())[2];
             gui.setItem(2, 1, Settings.message(this, player));
             gui.setItem(3, 1, Settings.status(this, player));
             gui.setItem(4, 0, Settings.social(this, player));
@@ -109,13 +106,14 @@ public class ClanGUI {
 
 
     }
+
     public Message message(Player player) {
         gui = Gui.empty(3, 1);
         gui.applyStructure(new Structure(
                 "...")
         );
-        if (members.containsKey(p.getName())) {
-            String clanName = members.get(p.getName())[2];
+        if (members.containsKey(this.player.getName())) {
+            String clanName = members.get(this.player.getName())[2];
             gui.setItem(0, 0, Message.oldMessage(this, player, Clan.getMessage(clanName)));
         }
         Message newMessage = Message.newMessage(this, player);
@@ -123,13 +121,14 @@ public class ClanGUI {
         return newMessage;
 
     }
+
     public Status status(Player player) {
         gui = Gui.empty(3, 1);
         gui.applyStructure(new Structure(
                 "...")
         );
-        if (members.containsKey(p.getName())) {
-            String clanName = members.get(p.getName())[2];
+        if (members.containsKey(this.player.getName())) {
+            String clanName = members.get(this.player.getName())[2];
             gui.setItem(0, 0, Status.oldStatus(this, player, Clan.getStatus(clanName)));
         }
         Status newStatus = Status.newStatus(this, player);
@@ -143,8 +142,8 @@ public class ClanGUI {
         gui.applyStructure(new Structure(
                 "...")
         );
-        if (members.containsKey(p.getName())) {
-            String clanName = members.get(p.getName())[2];
+        if (members.containsKey(this.player.getName())) {
+            String clanName = members.get(this.player.getName())[2];
             gui.setItem(0, 0, Social.oldSocial(this, player, Clan.getSocial(clanName)));
         }
         Social newSocial = Social.newSocial(this, player);
@@ -157,8 +156,8 @@ public class ClanGUI {
         gui.applyStructure(new Structure(
                 "...")
         );
-        if (members.containsKey(p.getName())) {
-            String clanName = members.get(p.getName())[2];
+        if (members.containsKey(this.player.getName())) {
+            String clanName = members.get(this.player.getName())[2];
             gui.setItem(0, 0, Rename.oldMessage(this, player, clanName));
         }
         Rename newSocial = Rename.newMessage(this, player);
@@ -166,9 +165,10 @@ public class ClanGUI {
         return newSocial;
 
     }
+
     public void displayAnvil(String title) {
         window = AnvilWindow.single()
-                .setViewer(p)
+                .setViewer(player)
                 .setGui(gui)
                 .setTitle(title)
                 .build();
@@ -178,17 +178,13 @@ public class ClanGUI {
 
     public void displayAnvil(String title, Consumer<String> callback) {
         window = AnvilWindow.single()
-                .setViewer(p)
+                .setViewer(player)
                 .setGui(gui)
                 .setTitle(title)
                 .addRenameHandler(callback)
                 .build();
         window.open();
 
-
     }
-
-
-
 
 }
