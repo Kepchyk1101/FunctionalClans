@@ -48,7 +48,7 @@ en:
   help:
     msg: '&aInformation on: /%s %s'
     msg1: '&aUsage: %s'
-    fc_msg: '&aList of admin commands:'
+    fc_msg: '&aList of admin commands: &7(Clickable)'
     clan_msg: '&aCommand List:'
     clan_msg1: '&aCategories: '
     button_0: '&7[&aALL&7] '
@@ -425,7 +425,7 @@ ru:
   help:
     msg: '&aИнформация по: /%s %s'
     msg1: '&aИспользование: %s'
-    fc_msg: '&aСписок команд администратора:'
+    fc_msg: '&aСписок команд администратора: &7(Кликабельно)'
     clan_msg: '&aСписок команд:'
     clan_msg1: '&aКатегории: '
     button_0: '&7[&aВСЕ&7] '

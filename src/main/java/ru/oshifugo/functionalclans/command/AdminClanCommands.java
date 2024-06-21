@@ -1,5 +1,8 @@
 package ru.oshifugo.functionalclans.command;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -9,6 +12,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import ru.oshifugo.functionalclans.ChatService;
 import ru.oshifugo.functionalclans.FunctionalClans;
 import ru.oshifugo.functionalclans.Utility;
 import ru.oshifugo.functionalclans.sql.Clan;
@@ -16,7 +21,11 @@ import ru.oshifugo.functionalclans.sql.ClanChest;
 import ru.oshifugo.functionalclans.sql.Member;
 import ru.oshifugo.functionalclans.sql.SQLiteUtility;
 
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminClanCommands implements CommandExecutor {
+
+    @NotNull ChatService chatService;
 
     static String prefix = Utility.config("prefix");
     private static Boolean check(CommandSender sender, String permission, String UID) {
@@ -37,6 +46,12 @@ public class AdminClanCommands implements CommandExecutor {
         }
 
     }
+
+    /**
+     * Look {@link ChatService#sendAdminHelpMessage(CommandSender)}
+     * @param sender
+     */
+    @Deprecated(since = "2.2.2-beta")
     public void help(CommandSender sender) {
         int i = 0;
         TextComponent message = new TextComponent(Utility.hex(prefix + Utility.lang(sender,"help.fc_msg") + "\n"));
@@ -90,7 +105,8 @@ public class AdminClanCommands implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            help(sender);
+            //help(sender);
+            chatService.sendAdminHelpMessage(sender);
             return true;
         }
         if (args[0].equalsIgnoreCase("over")) {
@@ -300,7 +316,8 @@ public class AdminClanCommands implements CommandExecutor {
 
         }
 
-        help(sender);
+        //help(sender);
+        chatService.sendAdminHelpMessage(sender);
 
         return true;
 

@@ -1,13 +1,18 @@
 package ru.oshifugo.functionalclans;
 
 import lombok.Getter;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import ru.oshifugo.functionalclans.api.FunctionalClansApi;
+import ru.oshifugo.functionalclans.api.FunctionalClansApiImpl;
 import ru.oshifugo.functionalclans.command.AdminClanCommands;
 import ru.oshifugo.functionalclans.command.ClanCommands;
 import ru.oshifugo.functionalclans.listener.*;
@@ -31,6 +36,11 @@ public final class FunctionalClans extends JavaPlugin {
     private static Economy economy = null;
 
     public static HashMap<String, String[]> placeholders_config = new HashMap<>();
+
+    private BukkitAudiences audiences;
+
+    @Getter
+    private FunctionalClansApi functionalClansApi;
 
     @Override
     public void onEnable() {
@@ -62,9 +72,17 @@ public final class FunctionalClans extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new SalaryListener(), this);
         }
 
+        audiences = BukkitAudiences.create(this);
+
+        functionalClansApi = new FunctionalClansApiImpl();
+
+        ChatService chatService = new ChatService(
+                audiences, LegacyComponentSerializer.legacyAmpersand()
+        );
+
         getCommand("clan").setExecutor(new ClanCommands());
         getServer().getPluginCommand("clan").setTabCompleter(new CommandsTab());
-        getCommand("fc").setExecutor(new AdminClanCommands());
+        getCommand("fc").setExecutor(new AdminClanCommands(chatService));
         getServer().getPluginCommand("fc").setTabCompleter(new AdminTab());
 
         Bukkit.getPluginManager().registerEvents(new PlayerDeathListener(), this);
@@ -94,6 +112,13 @@ public final class FunctionalClans extends JavaPlugin {
         hashConfig();
         new Metrics(this, 17919);
         new Expansion().register();
+
+        Bukkit.getServicesManager().register(
+                FunctionalClansApi.class,
+                functionalClansApi,
+                this,
+                ServicePriority.Normal
+        );
 
         Utility.info(Utility.hex("<#FF00FF>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
         Utility.info(Utility.hex("<#00CED1>Successfully enabled. &7(" + ChatColor.YELLOW + (System.currentTimeMillis() - time) + " ms" + ChatColor.GREEN + "&7)"));
@@ -125,6 +150,7 @@ public final class FunctionalClans extends JavaPlugin {
         Utility.info(Utility.hex("<#FF00FF>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
         Utility.info(Utility.hex("<#00CED1>Plugin disabled."));
         Utility.info(Utility.hex("<#FF00FF>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
+        audiences.close();
         instance = null;
     }
 

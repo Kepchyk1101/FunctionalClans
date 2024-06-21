@@ -1271,7 +1271,15 @@ public class ClanCommands implements CommandExecutor {
                 return true;
             }
 
-            SQLiteUtility.clanChests.get(clanName).openFor(player);
+            ClanChest clanChest = SQLiteUtility.clanChests.get(clanName);
+
+            if (clanChest == null) {
+                sender.sendMessage(Utility.hex(prefix + Utility.lang(sender,"common_errors.no_clan")));
+                return true;
+            }
+
+            clanChest.openFor(player);
+
             return true;
 
         }
