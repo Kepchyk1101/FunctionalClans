@@ -2,6 +2,7 @@ package ru.oshifugo.functionalclans.sql;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.jetbrains.annotations.Nullable;
 import ru.oshifugo.functionalclans.FunctionalClans;
 import ru.oshifugo.functionalclans.Utility;
 
@@ -32,9 +33,13 @@ public class Clan {
     public static boolean getPVP(String clanName) {
         return Objects.equals(SQLiteUtility.clans.get(clanName)[20], "1");
     }
+
+    @Nullable
     public static String getLeader(String clanName) {
-        return SQLiteUtility.clans.get(clanName)[1];
+        String[] clan = SQLiteUtility.clans.get(clanName);
+        return clan != null ? clan[1] : null;
     }
+
     public static Integer getCash(String clanName) {
         return Integer.valueOf(SQLiteUtility.clans.get(clanName)[2]);
     }
