@@ -21,5 +21,9 @@ public interface FunctionalClansApi {
      * @return clan name if the player is a member of it
      */
     Optional<String> getClanName(@NotNull OfflinePlayer player);
+    
+    Optional<Clan> getClanByName(@NotNull String clanName);
+    
+    Optional<Clan> getClanByPlayer(@NotNull OfflinePlayer player);
 
 }

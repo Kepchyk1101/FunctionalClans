@@ -2,11 +2,14 @@ package ru.oshifugo.functionalclans.sql;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Set;
 
 public class Ally {
 
     public static HashMap<String, String> AllyRequest = new HashMap<>();
+
+    private static final Random RANDOM = new Random();
 
     public static ArrayList<String> clan_ally(String UID) {
         ArrayList<String> alliance = new ArrayList<>();
@@ -24,7 +27,9 @@ public class Ally {
         if (AllyRequest.get(UID) != null) {
             if (AllyRequest.get(UID).equalsIgnoreCase(clanUID)) {
                 SQLiteUtility.clan_alliance.put(UID + "_" + clanUID, new String[]{UID, clanUID});
-                SQLite.execute("INSERT INTO clan_alliance (UID_1, UID_2) VALUES ('" + UID + "','" + clanUID + "')");
+
+                String id = String.valueOf(RANDOM.nextInt());
+                SQLite.execute("INSERT INTO `clan_alliance` VALUES(?,?,?);", id, UID, clanUID);
                 AllyRequest.remove(UID);
                 return true;
             }
