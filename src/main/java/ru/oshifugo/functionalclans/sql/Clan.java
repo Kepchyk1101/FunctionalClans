@@ -40,8 +40,8 @@ public class Clan {
         return clan != null ? clan[1] : null;
     }
 
-    public static Integer getCash(String clanName) {
-        return Integer.valueOf(SQLiteUtility.clans.get(clanName)[2]);
+    public static Long getCash(String clanName) {
+        return Long.valueOf(SQLiteUtility.clans.get(clanName)[2]);
     }
     public static Integer getRating(String clanName) {
         return Integer.valueOf(SQLiteUtility.clans.get(clanName)[3]);

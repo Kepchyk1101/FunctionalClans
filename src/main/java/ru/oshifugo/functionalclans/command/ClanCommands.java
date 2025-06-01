@@ -1218,7 +1218,7 @@ public class ClanCommands implements CommandExecutor {
                 if (!removeEconomy(player, args[2])) {
                     return true;
                 }
-                Clan.setCash(clanName, String.valueOf(Integer.parseInt(args[2]) + Clan.getCash(clanName)));
+                Clan.setCash(clanName, String.valueOf(Long.parseLong(args[2]) + Clan.getCash(clanName)));
                 sender.sendMessage(String.format(Utility.hex(prefix + Utility.lang(sender,"commands.cashadd.message.msg")), args[2]));
                 return true;
             } else if (args[1].equalsIgnoreCase("remove")) {
